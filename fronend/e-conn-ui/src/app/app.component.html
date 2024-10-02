@@ -1,2 +1,5 @@
-<router-outlet></router-outlet>
-<app-user-input></app-user-input>
+<app-loading-screen *ngIf="loading"></app-loading-screen>
+<div *ngIf="!loading">
+    <app-navbar></app-navbar>
+    <router-outlet></router-outlet>
+</div>

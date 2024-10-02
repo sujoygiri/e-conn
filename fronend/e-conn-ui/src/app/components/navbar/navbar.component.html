@@ -1,0 +1,22 @@
+<div class="card">
+    <p-menubar [model]="items">
+        <ng-template pTemplate="end">
+            <div class="authenticate-section">
+                <div class="flex gap-2">
+                    <p-button label="Create Account" [raised]="true" severity="info" />
+                    <p-button label="Signin" [raised]="true" [outlined]="true" severity="info" />
+                </div>
+            </div>
+            <div class="flex align-items-center gap-2">
+                <div (click)="profileDropdownMenu.toggle($event)">
+                    <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle"
+                        [style]="{marginTop:'0.4rem',marginRight:'1rem'}" styleClass="cursor-pointer" pTooltip="hi" />
+                </div>
+            </div>
+        </ng-template>
+    </p-menubar>
+    <div class="flex">
+        <p-menu #profileDropdownMenu [model]="profileDropdownMenuItems" [popup]="true" [style]="{right:0,left:0}"
+            styleClass="w-10rem top-auto left-auto" />
+    </div>
+</div>

@@ -1,0 +1,7 @@
+<div>
+    <ul id="messages" #message></ul>
+    <form id="user-input-form" [formGroup]="userInputForm" (ngSubmit)="handelPost()">
+        <input name="user-input" id="user-input" autocomplete="off" formControlName="userInput" />
+        <button type="submit">Send</button>
+    </form>
+</div>
