@@ -23,7 +23,8 @@ export const signupHandler = async (req: Request, res: Response, next: NextFunct
                 let responseObj: SuccessResponse = {
                     status: "success",
                     statusCode: 201,
-                    message: "Account created successfully"
+                    message: "Account created successfully",
+                    username
                 };
                 res.status(responseObj.statusCode).json(responseObj);
             }
@@ -56,7 +57,8 @@ export const signinHandler = async (req: Request, res: Response, next: NextFunct
                     let responseObj: SuccessResponse = {
                         status: "success",
                         statusCode: 200,
-                        message: "Signin successful"
+                        message: "Signin successful",
+                        username
                     };
                     res.status(responseObj.statusCode).json(responseObj);
                 } else {

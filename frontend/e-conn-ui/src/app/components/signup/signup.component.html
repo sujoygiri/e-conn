@@ -1,0 +1,105 @@
+<div class="container fixed top-0 left-0 h-full w-full flex align-items-center justify-content-center">
+    <div class="flex flex-column">
+        <div class="logo flex justify-content-center">
+            <img class="p-2" ngSrc="assets/images/loading-screen-logo.png" width="100" height="100" [priority]="true"
+                alt="Logo">
+        </div>
+        <div class="card flex justify-content-center mt-4">
+            <p-card [style]="{width:'25rem'}">
+                <ng-template pTemplate="title">
+                    <div class="flex justify-content-center">
+                        <div class="text-xl">Create Account</div>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="content">
+                    <p-messages showTransitionOptions="500ms" />
+                    <form method="post" [formGroup]="signupForm" (ngSubmit)="handelSignup()">
+                        <div class="flex flex-column gap-2 mt-3">
+                            <label for="username">Name</label>
+                            <p-iconField>
+                                <p-inputIcon styleClass="pi pi-user" />
+                                <input class="w-full" type="text" pInputText id="username" formControlName="username"
+                                    placeholder="john">
+                            </p-iconField>
+                            <div class="username-error"
+                                *ngIf="signupForm.controls['username'].invalid && signupForm.controls['username'].dirty">
+                                <p-messages severity="error" showTransitionOptions="500ms"
+                                    *ngIf="signupForm.controls['username']?.errors?.['required']">
+                                    <ng-template pTemplate>
+                                        <div class="ml-2">Name is required</div>
+                                    </ng-template>
+                                </p-messages>
+                                <p-messages severity="error" showTransitionOptions="500ms"
+                                    *ngIf="signupForm.controls['username']?.errors?.['minlength']">
+                                    <ng-template pTemplate>
+                                        <div class="ml-2">Name must be 3 or more letter long</div>
+                                    </ng-template>
+                                </p-messages>
+                                <p-messages severity="error" showTransitionOptions="500ms"
+                                    *ngIf="signupForm.controls['username']?.errors?.['pattern']">
+                                    <ng-template pTemplate>
+                                        <div class="ml-2">Name must contain only letters and whitespace</div>
+                                    </ng-template>
+                                </p-messages>
+                            </div>
+                        </div>
+                        <div class="flex flex-column gap-2 mt-3">
+                            <label for="email">Email</label>
+                            <p-iconField>
+                                <p-inputIcon styleClass="pi pi-at" />
+                                <input class="w-full" type="email" pInputText id="email" formControlName="email"
+                                    placeholder="john@example.com">
+                            </p-iconField>
+                            <div class="email-error"
+                                *ngIf="signupForm.controls['email'].invalid && signupForm.controls['email'].dirty">
+                                <p-messages severity="error" showTransitionOptions="500ms"
+                                    *ngIf="signupForm.controls['email']?.errors?.['required']">
+                                    <ng-template pTemplate>
+                                        <div class="ml-2">Email is required</div>
+                                    </ng-template>
+                                </p-messages>
+                                <p-messages severity="error" showTransitionOptions="500ms"
+                                    *ngIf="signupForm.controls['email']?.errors?.['email']">
+                                    <ng-template pTemplate>
+                                        <div class="ml-2">Not a valid email id</div>
+                                    </ng-template>
+                                </p-messages>
+                            </div>
+                        </div>
+                        <div class="flex flex-column gap-2 mt-3">
+                            <label for="password">Password</label>
+                            <div class="relative">
+                                <i class="pi pi-lock lock-icon"></i>
+                                <p-password styleClass="w-full" inputStyleClass="w-full" [toggleMask]="true"
+                                    [inputStyle]="{paddingLeft:'2.5rem'}" [feedback]="true" formControlName="password"
+                                    [pTooltip]="htmlTooltipContent" [escape]="false" />
+                            </div>
+                            <div class="password-error"
+                                *ngIf="signupForm.controls['password'].invalid && signupForm.controls['password'].dirty">
+                                <p-messages severity="error" showTransitionOptions="500ms"
+                                    *ngIf="signupForm.controls['password']?.errors?.['required']">
+                                    <ng-template pTemplate>
+                                        <div class="ml-2">Password is required</div>
+                                    </ng-template>
+                                </p-messages>
+                                <p-messages severity="error" showTransitionOptions="500ms"
+                                    *ngIf="signupForm.controls['password']?.errors?.['pattern']">
+                                    <ng-template pTemplate>
+                                        <div class="ml-2">Not a strong password. Follow rule</div>
+                                    </ng-template>
+                                </p-messages>
+                            </div>
+                        </div>
+                        <div class="w-full mt-3">
+                            <p-button label="Create" [raised]="true" styleClass="w-full" type="submit"
+                                [disabled]="signupForm.invalid" />
+                        </div>
+                    </form>
+                    <div class="mt-4">
+                        <p>Already have an account? <a routerLink="/signin">Signin</a></p>
+                    </div>
+                </ng-template>
+            </p-card>
+        </div>
+    </div>
+</div>

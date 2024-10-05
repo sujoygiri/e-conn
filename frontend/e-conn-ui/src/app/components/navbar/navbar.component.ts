@@ -6,6 +6,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { MenuModule } from 'primeng/menu';
 import { CommonModule } from '@angular/common';
 import { DividerModule } from 'primeng/divider';
+import { GlobalService } from '../../services/global.service';
 
 @Component({
   selector: 'app-navbar',
@@ -24,6 +25,9 @@ import { DividerModule } from 'primeng/divider';
 export class NavbarComponent implements OnInit {
   items: MenuItem[] | undefined;
   profileDropdownMenuItems: MenuItem[] | undefined;
+  constructor(
+    public globalService: GlobalService
+  ) { }
   ngOnInit(): void {
     this.items = [
       {
@@ -80,12 +84,14 @@ export class NavbarComponent implements OnInit {
             icon: 'pi pi-user',
             iconClass: 'text-cyan-500',
             styleClass: 'mt-2 mb-2',
+            routerLink: '/profile',
           },
           {
             label: 'Logout',
             icon: 'pi pi-sign-out',
             iconClass: 'text-red-600',
             styleClass: 'mb-2',
+            command: () => console.log('Logout')
           }
         ]
       }
