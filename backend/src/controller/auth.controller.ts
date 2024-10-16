@@ -12,19 +12,20 @@ export const signupHandler = async (req: Request, res: Response, next: NextFunct
             const { username, email, password } = matchedData(req);
             const salt = bcrypt.genSaltSync(10);
             const hashedPassword = bcrypt.hashSync(password, salt);
-            let userCreationQuery = `INSERT INTO "e-conn-app".users (username,email,password) VALUES ($1,$2,$3) RETURNING u_id`;
+            let userCreationQuery = `INSERT INTO "e-conn-app".users (username,email,password) VALUES ($1,$2,$3) RETURNING user_id`;
             let queryResult = await db.query(userCreationQuery, [username, email, hashedPassword]);
             if (queryResult.command === "INSERT" && queryResult.rowCount === 1) {
-                let userId = queryResult.rows[0]['u_id'];
+                let userId = queryResult.rows[0]['user_id'];
                 req.session.userData = {
-                    userId,
-                    username
+                    userId
                 };
                 let responseObj: SuccessResponse = {
                     status: "success",
                     statusCode: 201,
                     message: "Account created successfully",
-                    username
+                    username,
+                    email,
+                    userId,
                 };
                 res.status(responseObj.statusCode).json(responseObj);
             }
@@ -44,21 +45,22 @@ export const signinHandler = async (req: Request, res: Response, next: NextFunct
     if (result.isEmpty()) {
         try {
             const { email, password } = matchedData(req);
-            let getUserDataQuery = `SELECT u_id,username,password FROM "e-conn-app".users WHERE email=$1`;
+            let getUserDataQuery = `SELECT user_id,username,email,password FROM "e-conn-app".users WHERE email=$1`;
             let queryResult = await db.query(getUserDataQuery, [email]);
             if (queryResult.rows.length) {
-                let { u_id, username, password: hashedPassword } = queryResult.rows[0];
+                let { user_id, username, email, password: hashedPassword } = queryResult.rows[0];
                 let isCorrectPassword = bcrypt.compareSync(password, hashedPassword);
                 if (isCorrectPassword) {
                     req.session.userData = {
-                        userId: u_id,
-                        username
+                        userId: user_id
                     };
                     let responseObj: SuccessResponse = {
                         status: "success",
                         statusCode: 200,
                         message: "Signin successful",
-                        username
+                        username,
+                        email,
+                        userId: user_id,
                     };
                     res.status(responseObj.statusCode).json(responseObj);
                 } else {
@@ -86,14 +88,20 @@ export const authenticationHandler = async (req: Request, res: Response, next: N
     if (result.isEmpty()) {
         let sessionId: string = req.session.id;
         let findSessionDataQuery = `SELECT sess FROM "e-conn-app".sessions WHERE sid=$1`;
-        let queryResult = await db.query(findSessionDataQuery, [sessionId]);
-        if (queryResult.rows.length) {
-            let { username } = queryResult.rows[0].sess.userData;
+        let sessionQueryResult = await db.query(findSessionDataQuery, [sessionId]);
+        let userData: any = sessionQueryResult.rows[0].sess.userData;
+        if (userData) {
+            let { userId } = sessionQueryResult.rows[0].sess.userData;
+            let userDataQueryString = `SELECT username,email FROM "e-conn-app".users WHERE user_id=$1`;
+            let userDataQueryResult = await db.query(userDataQueryString, [userId]);
+            let { username, email } = userDataQueryResult.rows[0];
             let verifyResponse: SuccessResponse = {
                 status: "success",
                 statusCode: 200,
                 message: "Authentication successful",
-                username
+                username,
+                email,
+                userId,
             };
             res.status(verifyResponse.statusCode).json(verifyResponse);
         } else {

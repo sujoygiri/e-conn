@@ -2,7 +2,9 @@ export interface SuccessResponse {
     status: "success" | "fail";
     statusCode: number;
     message: string;
+    userId?: string;
     username?: string;
+    email?: string;
 }
 
 export interface ErrorResponse {
@@ -11,8 +13,14 @@ export interface ErrorResponse {
     message: string;
 }
 
-export interface UserData {
+export interface AuthData {
     username?: string;
     email: string;
     password: string;
+}
+
+export interface People {
+    userId: string;
+    username: string;
+    email: string;
 }

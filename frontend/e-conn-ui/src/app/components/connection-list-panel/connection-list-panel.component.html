@@ -1,0 +1,55 @@
+<div class="card w-20rem h-screen">
+    <div class="card-body flex flex-column gap-2 p-3 w-full h-full overflow-x-hidden overflow-y-auto bg-bluegray-800">
+        <div class="title flex justify-content-between">
+            <div class="text-xl">Chats</div>
+            <div class="add-connection cursor-pointer hover:bg-white-alpha-10 p-2 border-round-md"
+                (click)="addConnection()">
+                <i class="pi pi-plus"></i>
+            </div>
+        </div>
+        <div class="flex align-items-center gap-3 surface-card shadow-5 p-2 cursor-pointer border-round-md hover:bg-white-alpha-10"
+            *ngFor="let people of chatList" (click)="handelUserSelect(people)">
+            <div class="profile-image">
+                <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle"
+                    [style]="{marginTop:'0.4rem'}" />
+            </div>
+            <div class="content">
+                <div class="profile-name">{{people.username}}</div>
+                <div class="last-chat-content"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card flex justify-content-center">
+    <p-dialog header="Add people" [modal]="true" [(visible)]="visible" [style]="{ width: '30rem' }"
+        [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false" [dismissableMask]="true"
+        (onHide)="resetState()">
+        <div class="card">
+            <form [formGroup]="searchForm">
+                <div class="flex flex-column gap-2">
+                    <label for="email">Email</label>
+                    <input pInputText id="email" formControlName="search" (input)="searchPeople()" />
+                </div>
+            </form>
+            <div class="border-1 border-cyan-300 border-round-md mt-2" *ngIf="foundPeople.length">
+                <div class="flex align-items-center gap-3 hover:bg-white-alpha-10 p-2 cursor-pointer"
+                    *ngFor="let people of foundPeople; index as i" (click)="addToChatList(people)">
+                    <div class="profile-image">
+                        <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
+                            shape="circle" [style]="{marginTop:'0.4rem'}" />
+                    </div>
+                    <div class="detail">
+                        <div class="profile-name">{{people.username}}</div>
+                        <div class="profile-email text-sm">{{people.email}}</div>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="!isPeopleFound">
+                <div class="p-2 border-1 border-cyan-300 border-round-md mt-2">No people found</div>
+            </div>
+            <div class="card flex justify-content-center" *ngIf="loading">
+                <p-progressSpinner ariaLabel="loading" styleClass="w-4rem h-4rem" />
+            </div>
+        </div>
+    </p-dialog>
+</div>

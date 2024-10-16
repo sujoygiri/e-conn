@@ -9,6 +9,9 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from './services/auth.service';
 import { filter } from 'rxjs';
 import { GlobalService } from './services/global.service';
+import { People } from './interfaces/common.interface';
+import socket from './socket-client/socket';
+
 
 @Component({
   selector: 'app-root',
@@ -31,7 +34,8 @@ export class AppComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private globalService: GlobalService,
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
     this.primengConfig.ripple = true;
@@ -41,9 +45,19 @@ export class AppComponent implements OnInit {
     this.authService.verifyUser().subscribe({
       next: (response) => {
         if (response.status === "success" && response.statusCode === 200) {
-          this.router.navigateByUrl("/");
-          this.globalService.username = response.username;
+          let userDetails: People = {
+            username: response.username as string,
+            email: response.email as string,
+            userId: response.userId as string,
+          };
+          this.globalService.authUser = userDetails;
+          window.localStorage.setItem("userData", JSON.stringify(userDetails));
           this.loading = false;
+          socket.auth = {
+            userId: response.userId,
+          };
+          socket.connect();
+          this.router.navigateByUrl("/");
         }
       },
       error: (err) => {
@@ -60,8 +74,5 @@ export class AppComponent implements OnInit {
         this.router.navigateByUrl(this.currentUrl);
       }
     });
-    // setTimeout(() => {
-    //   this.loading = false; // Hide splash screen after loading
-    // }, 20000); // Adjust the duration as needed
   }
 }

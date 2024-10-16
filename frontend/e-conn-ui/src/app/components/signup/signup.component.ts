@@ -13,9 +13,10 @@ import { PasswordModule } from 'primeng/password';
 import { AuthService } from '../../services/auth.service';
 import { MessagesModule } from 'primeng/messages';
 import { TooltipModule } from 'primeng/tooltip';
-import { ErrorResponse, UserData } from '../../interfaces/common.interface';
+import { ErrorResponse, People, AuthData } from '../../interfaces/common.interface';
 import { HttpErrorResponse } from '@angular/common/http';
 import { GlobalService } from '../../services/global.service';
+import socket from '../../socket-client/socket';
 
 @Component({
   selector: 'app-signup',
@@ -59,13 +60,23 @@ export class SignupComponent {
     });
   }
   handelSignup() {
-    const userData: UserData = this.signupForm.value;
+    const userData: AuthData = this.signupForm.value;
     this.loadingStatus = true;
     this.authService.signup(userData).subscribe({
       next: (response) => {
         if (response.status === "success" && response.statusCode === 201) {
           this.loadingStatus = false;
-          this.globalService.username = response.username;
+          let userDetails: People = {
+            username: response.username as string,
+            email: response.email as string,
+            userId: response.userId as string,
+          };
+          this.globalService.authUser = userDetails;
+          window.localStorage.setItem("authUser", JSON.stringify(userDetails));
+          socket.auth = {
+            userId: response.userId,
+          };
+          socket.connect();
           this.router.navigateByUrl("/");
         }
       },

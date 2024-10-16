@@ -1,0 +1,21 @@
+<div class="w-full h-full flex flex-column">
+    <header class="h-4rem bg-white-alpha-10">
+        <div class="flex align-items-center" *ngIf="globalService.selectedUser !== undefined">
+            <div class="profile-image">
+                <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle"
+                    [style]="{marginTop:'0.4rem'}" />
+            </div>
+            <div class="profile-name">{{globalService.selectedUser.username}}</div>
+        </div>
+    </header>
+    <div class="main relative flex-1">
+        <div class="messages" #messages></div>
+    </div>
+    <footer>
+        <div class="flex align-items-center justify-content-center bg-white-alpha-20 p-2">
+            <textarea class="p-3 text-lg line-height-3" pInputTextarea cols="80" rows="1" id=""
+                placeholder="Type a message" [autoResize]="true" [(ngModel)]="typedMessage"
+                (keydown)="sendMessage($event)"></textarea>
+        </div>
+    </footer>
+</div>

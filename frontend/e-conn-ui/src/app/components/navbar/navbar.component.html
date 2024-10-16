@@ -1,15 +1,14 @@
-<div class="card">
-    <p-menubar [model]="items">
+<div class="card w-15rem h-full fixed">
+    <p-menu [model]="items" [style]="{'height': '100%'}">
         <ng-template pTemplate="end">
             <div class="flex align-items-center gap-2">
                 <div (click)="profileDropdownMenu.toggle($event)">
                     <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle"
-                        [style]="{marginTop:'0.4rem',marginRight:'1rem'}" styleClass="cursor-pointer"
-                        [pTooltip]="'Hi' + ' ' + globalService.username" />
+                        [style]="{marginTop:'0.4rem',marginRight:'1rem'}" styleClass="cursor-pointer" [pTooltip]="" />
                 </div>
             </div>
         </ng-template>
-    </p-menubar>
+    </p-menu>
     <div class="flex">
         <p-menu #profileDropdownMenu [model]="profileDropdownMenuItems" [popup]="true" [style]="{right:0,left:0}"
             styleClass="w-10rem top-auto left-auto" />

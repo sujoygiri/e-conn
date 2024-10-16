@@ -7,14 +7,15 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
-import socket from '../../socket-client/socket';
 import { Router, RouterModule } from '@angular/router';
-import { ErrorResponse, UserData } from '../../interfaces/common.interface';
+
+import { ErrorResponse, People, AuthData } from '../../interfaces/common.interface';
 import { Message, MessageService } from 'primeng/api';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { MessagesModule } from 'primeng/messages';
 import { GlobalService } from '../../services/global.service';
+import socket from '../../socket-client/socket';
 
 @Component({
   selector: 'app-signin',
@@ -54,13 +55,23 @@ export class SigninComponent {
     });
   }
   handelSignin() {
-    const userData: UserData = this.signinForm.value;
+    const userData: AuthData = this.signinForm.value;
     this.loadingStatus = true;
     this.authService.signin(userData).subscribe({
       next: (response) => {
         if (response.status === "success" && response.statusCode === 200) {
+          let userDetails: People = {
+            username: response.username as string,
+            email: response.email as string,
+            userId: response.userId as string,
+          };
+          this.globalService.authUser = userDetails;
+          window.localStorage.setItem("user", JSON.stringify(userDetails));
           this.loadingStatus = false;
-          this.globalService.username = response.username;
+          socket.auth = {
+            userId: response.userId,
+          };
+          socket.connect();
           this.router.navigateByUrl("/");
         }
       },
