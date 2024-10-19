@@ -44,7 +44,7 @@
                     </div>
                 </div>
             </div>
-            <div *ngIf="!isPeopleFound">
+            <div *ngIf="!isPeopleFound && searchForm.controls['search'].valid">
                 <div class="p-2 border-1 border-cyan-300 border-round-md mt-2">No people found</div>
             </div>
             <div class="card flex justify-content-center" *ngIf="loading">

@@ -36,7 +36,7 @@ export class ConnectionListPanelComponent {
   chatList: People[] = [];
   foundPeople: People[] = [];
   loading: boolean = false;
-  isPeopleFound: boolean = true;
+  isPeopleFound: boolean = false;
   constructor(
     private formBuilder: FormBuilder,
     private globalService: GlobalService,
@@ -119,5 +119,6 @@ export class ConnectionListPanelComponent {
     this.loading = false;
     this.foundPeople = [];
     this.searchForm.reset();
+    this.isPeopleFound = false;
   }
 }

@@ -13,7 +13,7 @@
     </div>
     <footer>
         <div class="flex align-items-center justify-content-center bg-white-alpha-20 p-2">
-            <textarea class="p-3 text-lg line-height-3" pInputTextarea cols="80" rows="1" id=""
+            <textarea class="p-3 text-lg line-height-2" pInputTextarea [cols]="80" rows="1" id=""
                 placeholder="Type a message" [autoResize]="true" [(ngModel)]="typedMessage"
                 (keydown)="sendMessage($event)"></textarea>
         </div>
