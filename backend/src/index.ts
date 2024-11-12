@@ -51,7 +51,7 @@ const sessionMiddleware = session({
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors({
-    origin: ["http://localhost:4200", "https://e-conn.pages.dev"],
+    origin: ["http://localhost:4200", "https://e-conn.pages.dev", "https://e-conn.netlify.app"],
     optionsSuccessStatus: 200,
     credentials: true
 }));
@@ -74,7 +74,7 @@ app.use(errorHandler);
 
 const io = new Server(server, {
     cors: {
-        origin: ["http://localhost:4200", "https://e-conn.pages.dev"],
+        origin: ["http://localhost:4200", "https://e-conn.pages.dev", "https://e-conn.netlify.app"],
         credentials: true,
     }
 });
