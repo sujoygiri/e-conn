@@ -39,7 +39,7 @@ const sessionMiddleware = session({
         httpOnly: true,
         maxAge: 7 * 24 * 60 * 60 * 1000,
         sameSite: "none",
-        secure: "auto",
+        secure: true,
     },
     store: new pgStore({
         pool: db.pool,
