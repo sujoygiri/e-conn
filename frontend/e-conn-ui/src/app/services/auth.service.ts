@@ -7,24 +7,26 @@ import { SuccessResponse, AuthData } from '../interfaces/common.interface';
 })
 export class AuthService {
 
+  hostURL: string = "https://e-conn-production.up.railway.app";
+
   constructor(private httpClient: HttpClient) { }
 
   signup(userData: AuthData) {
-    const URL = `http://localhost:6969/api/v1/auth/signup`;
+    const URL = `${this.hostURL}/api/v1/auth/signup`;
     return this.httpClient.post<SuccessResponse>(URL, userData, {
       withCredentials: true
     });
   }
 
   signin(userData: AuthData) {
-    const URL = `http://localhost:6969/api/v1/auth/signin`;
+    const URL = `${this.hostURL}/api/v1/auth/signin`;
     return this.httpClient.post<SuccessResponse>(URL, userData, {
       withCredentials: true
     });
   }
 
   verifyUser() {
-    const URL = `http://localhost:6969/api/v1/auth/verify`;
+    const URL = `${this.hostURL}/api/v1/auth/verify`;
     return this.httpClient.get<SuccessResponse>(URL, {
       withCredentials: true,
     });
