@@ -1,0 +1,35 @@
+#chat-section {
+  height: calc(100vh - 5rem - 4rem);
+}
+
+/* For Chrome, Safari, and Edge */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 0.5rem;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #2e5cb3;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #003152;
+}
+
+/* For Firefox */
+// body {
+//   scrollbar-width: thin;
+//   scrollbar-color: #888 #f1f1f1;
+// }
+
+/* For IE, Edge and Firefox */
+// body {
+//   -ms-overflow-style: none;
+//   scrollbar-width: thin;
+//   scrollbar-color: #888 #f1f1f1;
+// }

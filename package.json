@@ -1,0 +1,13 @@
+{
+  "name": "e-conn-app",
+  "version": "1.0.0",
+  "description": "A chat application which presents simplicity",
+  "scripts": {
+    "frontend:start": "cd frontend/e-conn-ui && npm start",
+    "backend:start": "cd backend && npm run start:dev",
+    "start": "concurrently \"npm run frontend:start\" \"npm run backend:start\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sujoy Giri",
+  "license": "ISC"
+}

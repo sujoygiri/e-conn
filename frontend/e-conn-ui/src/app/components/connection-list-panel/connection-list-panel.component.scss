@@ -1,0 +1,7 @@
+:host ::ng-deep .p-menu {
+  transform-origin: right bottom;
+  transform: translateX(-80%); /* Position the menu to the left */
+}
+.card-body {
+  border-right: 0.1rem solid #166daf;
+}

@@ -1,3 +1,26 @@
-<div class="card w-10rem h-screen">
-    <p-menu [model]="items" [style]="{'height': '100%','width':'100%'}" />
+<div class="card w-5rem h-screen">
+    <div class="card-body menu-items flex flex-column justify-content-between h-full">
+        <div class="top-menu flex flex-column p-2">
+            <div class="menu-item flex flex-column align-items-center justify-content-center cursor-pointer mb-1 "
+                *ngFor="let item of sideNavigationPanelItems" (click)="handelMenuItemSelect(item)">
+                <div pRipple [pTooltip]="item.label" tooltipPosition="right"
+                    [ngClass]="selectedMenuItem.label === item.label ? 'p-3 border-round-lg bg-white-alpha-10 text-primary' : 'p-3 border-round-lg hover:bg-white-alpha-10 hover:text-primary transition-all transition-duration-500 transition-ease-in'">
+                    <span
+                        [ngClass]="selectedMenuItem.label === item.label ? 'material-icons' + ' ' + item.iconClass : item.styleClass + ' ' + item.iconClass">{{item.icon}}</span>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-menu flex flex-column p-2">
+            <div class="user-profile flex align-items-center justify-content-center cursor-pointer"
+                (click)="handelMenuItemSelect(profileMenuItem)">
+                <div pRipple [pTooltip]="authUser + '&nbsp;&lpar;Me&rpar;'" tooltipPosition="right"
+                    [ngClass]="selectedMenuItem.label === 'Profile' ? 'p-2 border-round-lg bg-white-alpha-10 text-primary' : 'p-2 border-round-lg hover:bg-white-alpha-10 hover:text-primary transition-all transition-duration-500 transition-ease-in'">
+                    <div [style]="{height:'40px',width:'40px'}">
+                        <img src="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
+                            [style]="{height:'100%', width:'100%' }" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

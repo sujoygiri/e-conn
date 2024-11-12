@@ -1,29 +1,45 @@
-<div class="card w-20rem h-screen">
-    <div class="card-body flex flex-column gap-2 p-3 w-full h-full overflow-x-hidden overflow-y-auto bg-bluegray-800">
+<div class="card w-25rem h-screen">
+    <div class="card-body flex flex-column gap-2 p-3 w-full h-full overflow-x-hidden overflow-y-auto bg-gray-900">
         <div class="title flex justify-content-between">
-            <div class="text-xl">Chats</div>
-            <div class="add-connection cursor-pointer hover:bg-white-alpha-10 p-2 border-round-md"
-                (click)="addConnection()">
-                <i class="pi pi-plus"></i>
+            <div class="text-xl">{{globalService.selectedMenuItem?.label}}</div>
+            <div class="flex align-items-center gap-1">
+                <div pRipple class="add-connection cursor-pointer hover:bg-white-alpha-10 p-2 border-round-md"
+                    (click)="addConnection()">
+                    <span class="material-icons">person_add_alt_1</span>
+                </div>
+                <div pRipple class="more-options cursor-pointer hover:bg-white-alpha-10 p-2 border-round-md"
+                    (click)="moreChatOptions.toggle($event)">
+                    <span class="material-icons">more_vert</span>
+                </div>
+                <div class="more-chat-options">
+                    <p-menu #moreChatOptions [model]="moreChatOptionsItems" [popup]="true" />
+                </div>
             </div>
         </div>
-        <div class="flex align-items-center gap-3 surface-card shadow-5 p-2 cursor-pointer border-round-md hover:bg-white-alpha-10"
-            *ngFor="let people of chatList" (click)="handelUserSelect(people)">
-            <div class="profile-image">
-                <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle"
-                    [style]="{marginTop:'0.4rem'}" />
+        <div class="chats flex flex-column gap-2" *ngIf="globalService.selectedMenuItem?.label === 'Chats'">
+            <div *ngFor="let people of chatList" (click)="handelUserSelect(people)">
+                <div pRipple
+                    [ngClass]="selectedPeople.userId === people.userId ? 'flex align-items-center bg-white-alpha-30 shadow-5 p-2 cursor-pointer border-round-md hover:bg-white-alpha-20' : 'flex align-items-center bg-white-alpha-10 shadow-5 p-2 cursor-pointer border-round-md hover:bg-white-alpha-20'">
+                    <div class="profile-image">
+                        <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
+                            shape="circle" [style]="{marginTop:'0.4rem'}" />
+                    </div>
+                    <div class="content">
+                        <div class="profile-name">{{people.username}}</div>
+                        <div class="last-chat-content"></div>
+                    </div>
+                </div>
             </div>
-            <div class="content">
-                <div class="profile-name">{{people.username}}</div>
-                <div class="last-chat-content"></div>
-            </div>
+        </div>
+        <div class="activity" *ngIf="globalService.selectedMenuItem?.label === 'Activity'">
+
         </div>
     </div>
 </div>
 <div class="card flex justify-content-center">
     <p-dialog header="Add people" [modal]="true" [(visible)]="visible" [style]="{ width: '30rem' }"
         [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false" [dismissableMask]="true"
-        (onHide)="resetState()">
+        (onHide)="resetState()" position="top">
         <div class="card">
             <form [formGroup]="searchForm">
                 <div class="flex flex-column gap-2">
@@ -44,7 +60,7 @@
                     </div>
                 </div>
             </div>
-            <div *ngIf="!isPeopleFound && searchForm.controls['search'].valid">
+            <div *ngIf="!isPeopleFound && searchForm.controls['search'].valid && !loading">
                 <div class="p-2 border-1 border-cyan-300 border-round-md mt-2">No people found</div>
             </div>
             <div class="card flex justify-content-center" *ngIf="loading">

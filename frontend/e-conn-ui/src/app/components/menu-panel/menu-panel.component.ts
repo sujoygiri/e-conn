@@ -1,29 +1,65 @@
 import { Component, OnInit } from '@angular/core';
-import { MenuItem } from 'primeng/api';
-import { MenuModule } from 'primeng/menu';
+import { CommonModule } from '@angular/common';
+import { RippleModule } from 'primeng/ripple';
+
 import { NavbarComponent } from "../navbar/navbar.component";
+import { SideNavigationPanelItem } from '../../interfaces/common.interface';
+import { GlobalService } from '../../services/global.service';
+import { SharedService } from '../../services/shared.service';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-menu-panel',
   standalone: true,
   imports: [
-    MenuModule,
-    NavbarComponent
+    CommonModule,
+    RippleModule,
+    TooltipModule
   ],
   templateUrl: './menu-panel.component.html',
   styleUrl: './menu-panel.component.scss'
 })
 export class MenuPanelComponent implements OnInit {
-  items: MenuItem[] | undefined;
+  sideNavigationPanelItems: SideNavigationPanelItem[] | undefined;
+  selectedMenuItem!: SideNavigationPanelItem;
+  authUser: string | undefined = undefined;
+  profileMenuItem!: SideNavigationPanelItem;
+  constructor(
+    private globalService: GlobalService,
+    private sharedService: SharedService
+  ) { }
   ngOnInit() {
-    this.items = [
+    this.authUser = this.globalService.authUser?.username;
+    this.sideNavigationPanelItems = [
       {
-        icon: 'pi pi-bars', iconClass: 'main-menu', command: () => { }
+        label: 'Activity',
+        icon: 'notifications',
+        iconClass: 'text-3xl',
+        styleClass: 'material-icons-outlined'
       },
-      { icon: 'pi pi-home' },
-      { icon: 'pi pi-chart-line' },
-      { icon: 'pi pi-list' },
-      { icon: 'pi pi-inbox' }
+      {
+        label: 'Chats',
+        icon: 'chat',
+        iconClass: 'text-2xl',
+        styleClass: 'material-icons-outlined'
+      },
+      // {
+      //   
+      // }
     ];
+    this.profileMenuItem = {
+      label: 'Profile',
+      icon: 'pi pi-user',
+      iconClass: 'text-xl',
+      styleClass: 'flex'
+    };
+    this.selectedMenuItem = this.sideNavigationPanelItems[1];
+    this.globalService.selectedMenuItem = this.sideNavigationPanelItems[1];
+  }
+
+  handelMenuItemSelect(selectedMenu: SideNavigationPanelItem) {
+    this.sharedService.triggerMenuItemClickedEvent(selectedMenu);
+    this.selectedMenuItem = selectedMenu;
+    this.globalService.selectedMenuItem = selectedMenu;
   }
 }

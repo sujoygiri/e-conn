@@ -19,7 +19,6 @@ import socket from './socket-client/socket';
   imports: [
     CommonModule,
     RouterOutlet,
-    UserInputComponent,
     LoadingScreenComponent,
   ],
   templateUrl: './app.component.html',

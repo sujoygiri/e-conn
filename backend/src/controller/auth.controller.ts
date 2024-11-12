@@ -86,27 +86,31 @@ export const signinHandler = async (req: Request, res: Response, next: NextFunct
 export const authenticationHandler = async (req: Request, res: Response, next: NextFunction) => {
     const result = validationResult(req);
     if (result.isEmpty()) {
-        let sessionId: string = req.session.id;
-        let findSessionDataQuery = `SELECT sess FROM "e-conn-app".sessions WHERE sid=$1`;
-        let sessionQueryResult = await db.query(findSessionDataQuery, [sessionId]);
-        let userData: any = sessionQueryResult.rows[0].sess.userData;
-        if (userData) {
-            let { userId } = sessionQueryResult.rows[0].sess.userData;
-            let userDataQueryString = `SELECT username,email FROM "e-conn-app".users WHERE user_id=$1`;
-            let userDataQueryResult = await db.query(userDataQueryString, [userId]);
-            let { username, email } = userDataQueryResult.rows[0];
-            let verifyResponse: SuccessResponse = {
-                status: "success",
-                statusCode: 200,
-                message: "Authentication successful",
-                username,
-                email,
-                userId,
-            };
-            res.status(verifyResponse.statusCode).json(verifyResponse);
-        } else {
-            let error: CustomError = new Error("Session not found");
-            error.statusCode = 404;
+        try {
+            let sessionId: string = req.session.id;
+            let findSessionDataQuery = `SELECT sess FROM "e-conn-app".sessions WHERE sid=$1`;
+            let sessionQueryResult = await db.query(findSessionDataQuery, [sessionId]);
+            let userData: any = sessionQueryResult?.rows[0]?.sess.userData;
+            if (userData) {
+                let { userId } = userData;
+                let userDataQueryString = `SELECT username,email FROM "e-conn-app".users WHERE user_id=$1`;
+                let userDataQueryResult = await db.query(userDataQueryString, [userId]);
+                let { username, email } = userDataQueryResult.rows[0];
+                let verifyResponse: SuccessResponse = {
+                    status: "success",
+                    statusCode: 200,
+                    message: "Authentication successful",
+                    username,
+                    email,
+                    userId,
+                };
+                res.status(verifyResponse.statusCode).json(verifyResponse);
+            } else {
+                let error: CustomError = new Error("Session not found");
+                error.statusCode = 404;
+                next(error);
+            }
+        } catch (error) {
             next(error);
         }
     } else {

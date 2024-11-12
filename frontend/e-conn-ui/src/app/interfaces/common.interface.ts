@@ -24,3 +24,20 @@ export interface People {
     username: string;
     email: string;
 }
+
+export interface SideNavigationPanelItem {
+    label: string;
+    icon: string;
+    iconClass: string;
+    styleClass: string;
+}
+
+export interface ChatDetail {
+    chat_id: string;
+    content: string;
+    sender_id: string;
+    receiver_id: string;
+    is_read: boolean;
+    created_at: string;
+    // updated_at: string;
+}
