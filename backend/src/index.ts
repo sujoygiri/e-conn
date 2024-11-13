@@ -29,6 +29,11 @@ declare module 'express-session' {
     }
 }
 
+app.use(cors({
+    origin: ["http://localhost:4200", "https://e-conn.pages.dev", "https://e-conn.netlify.app"],
+    optionsSuccessStatus: 200,
+    credentials: true
+}));
 const sessionMiddleware = session({
     name: "SSID",
     secret: "secret",
@@ -38,7 +43,10 @@ const sessionMiddleware = session({
     cookie: {
         httpOnly: true,
         maxAge: 7 * 24 * 60 * 60 * 1000,
-        sameSite: false
+        sameSite: "none",
+        secure: true,
+        domain: "e-conn.pages.dev",
+        path: "/"
     },
     store: new pgStore({
         pool: db.pool,
@@ -50,11 +58,6 @@ const sessionMiddleware = session({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cors({
-    origin: ["http://localhost:4200", "https://e-conn.pages.dev", "https://e-conn.netlify.app"],
-    optionsSuccessStatus: 200,
-    credentials: true
-}));
 app.use(sessionMiddleware);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/util", utilRouter);
