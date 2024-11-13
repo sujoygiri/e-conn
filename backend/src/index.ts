@@ -30,7 +30,7 @@ declare module 'express-session' {
 }
 
 app.use(cors({
-    origin: ["http://localhost:4200", "https://e-conn.pages.dev", "https://e-conn.netlify.app"],
+    origin: "https://e-conn.pages.dev",
     optionsSuccessStatus: 200,
     credentials: true
 }));
