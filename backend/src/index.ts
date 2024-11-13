@@ -38,7 +38,8 @@ const sessionMiddleware = session({
     cookie: {
         httpOnly: true,
         maxAge: 7 * 24 * 60 * 60 * 1000,
-        sameSite: "none"
+        sameSite: "none",
+        secure: true
     },
     store: new pgStore({
         pool: db.pool,
