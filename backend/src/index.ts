@@ -38,8 +38,7 @@ const sessionMiddleware = session({
     cookie: {
         httpOnly: true,
         maxAge: 7 * 24 * 60 * 60 * 1000,
-        sameSite: "none",
-        secure: true
+        sameSite: "none"
     },
     store: new pgStore({
         pool: db.pool,
@@ -49,8 +48,6 @@ const sessionMiddleware = session({
     })
 });
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 app.use(cors({
     origin: "https://e-conn.pages.dev",
     optionsSuccessStatus: 200,
@@ -61,6 +58,8 @@ app.use(cors({
     exposedHeaders: ["Set-Cookie"],
     maxAge: 7 * 24 * 60 * 60 * 1000
 }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.use(sessionMiddleware);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/util", utilRouter);
