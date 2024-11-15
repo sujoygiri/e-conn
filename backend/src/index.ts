@@ -25,8 +25,7 @@ declare module 'express-session' {
         userData?: {
             userId?: string,
             username?: string;
-        },
-        secure: boolean;
+        };
     }
 }
 
@@ -49,7 +48,7 @@ const sessionMiddleware = session({
         createTableIfMissing: true,
     })
 });
-
+app.set('trust proxy', 1);
 app.use(cors({
     origin: "https://e-conn.pages.dev",
     optionsSuccessStatus: 200,
@@ -63,11 +62,6 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(sessionMiddleware);
-app.use((req, res, next) => {
-    req.session.secure = true;
-    req.session.cookie.secure = true;
-    next();
-});
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/util", utilRouter);
 app.get("/", async (req, res, next) => {
