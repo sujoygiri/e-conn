@@ -29,11 +29,6 @@ declare module 'express-session' {
     }
 }
 
-app.use(cors({
-    origin: "https://e-conn.pages.dev",
-    optionsSuccessStatus: 200,
-    credentials: true
-}));
 const sessionMiddleware = session({
     name: "SSID",
     secret: "secret",
@@ -44,9 +39,7 @@ const sessionMiddleware = session({
         httpOnly: true,
         maxAge: 7 * 24 * 60 * 60 * 1000,
         sameSite: "none",
-        secure: true,
-        domain: "e-conn.pages.dev",
-        path: "/"
+        secure: true
     },
     store: new pgStore({
         pool: db.pool,
@@ -58,13 +51,26 @@ const sessionMiddleware = session({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cors({
+    origin: "https://e-conn.pages.dev",
+    optionsSuccessStatus: 200,
+    credentials: true,
+    allowedHeaders: ["Content-Type", "*"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    preflightContinue: false,
+    exposedHeaders: ["Set-Cookie"],
+    maxAge: 7 * 24 * 60 * 60 * 1000
+}));
 app.use(sessionMiddleware);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/util", utilRouter);
 app.get("/", async (req, res, next) => {
     let result = (await db.query(`SELECT NOW()`)).rows;
     console.log(req.session.id);
-    res.json({ msg: "Hello", result });
+    res.cookie("_session", req.session.id, {
+        httpOnly: true,
+        maxAge: 7 * 24 * 60 * 60 * 1000
+    }).json({ msg: "Hello", result });
     next();
 });
 app.get("/api/v1/db-init", async (req: Request, res: Response, next: NextFunction) => {
