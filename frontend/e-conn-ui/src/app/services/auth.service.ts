@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { SuccessResponse, AuthData } from '../interfaces/common.interface';
+import configData from '../utils/data.util';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  hostURL: string = "https://e-conn-production.up.railway.app";
+  hostURL: string = configData.hostURL;
 
   constructor(private httpClient: HttpClient) { }
 

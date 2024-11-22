@@ -50,13 +50,11 @@ const sessionMiddleware = session({
 });
 app.set('trust proxy', 1);
 app.use(cors({
-    origin: "https://e-conn.pages.dev",
+    origin: ["https://e-conn.pages.dev", "https://e-conn.netlify.app", "http://localhost:4200"],
     optionsSuccessStatus: 200,
     credentials: true,
-    allowedHeaders: ["Content-Type", "*"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     preflightContinue: false,
-    exposedHeaders: ["Set-Cookie"],
     maxAge: 7 * 24 * 60 * 60 * 1000
 }));
 app.use(express.json());

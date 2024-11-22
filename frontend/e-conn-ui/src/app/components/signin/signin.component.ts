@@ -59,6 +59,7 @@ export class SigninComponent {
     this.loadingStatus = true;
     this.authService.signin(userData).subscribe({
       next: (response) => {
+        this.loadingStatus = false;
         if (response.status === "success" && response.statusCode === 200) {
           let userDetails: People = {
             username: response.username as string,
@@ -67,7 +68,6 @@ export class SigninComponent {
           };
           this.globalService.authUser = userDetails;
           window.localStorage.setItem("user", JSON.stringify(userDetails));
-          this.loadingStatus = false;
           socket.auth = {
             userId: response.userId,
           };
@@ -76,9 +76,9 @@ export class SigninComponent {
         }
       },
       error: (err: HttpErrorResponse) => {
+        this.loadingStatus = false;
         let errorResponse: ErrorResponse = err.error;
         if (errorResponse.status === "error") {
-          this.loadingStatus = false;
           this.messageService.add({
             severity: errorResponse.status,
             detail: errorResponse.message

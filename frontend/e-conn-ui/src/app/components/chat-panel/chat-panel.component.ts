@@ -91,15 +91,16 @@ export class ChatPanelComponent implements OnInit, OnDestroy {
     });
     socket.on("private-message", ({ message, messageId, from, to, createdAt }) => {
       // console.log(this.globalService.selectedUser, from);
-      // console.log(this.globalService.selectedUser?.userId === from);
-      this.chatList.push({
-        chat_id: messageId,
-        content: message,
-        sender_id: from,
-        receiver_id: to,
-        is_read: false,
-        created_at: createdAt
-      });
+      if (this.globalService.selectedUser?.userId === to) {
+        this.chatList.push({
+          chat_id: messageId,
+          content: message,
+          sender_id: from,
+          receiver_id: to,
+          is_read: false,
+          created_at: createdAt
+        });
+      }
       // console.log(message, from, to);
       // if (this.globalService.selectedUser) {
       //   if (this.globalService.authUser?.userId === to) {
