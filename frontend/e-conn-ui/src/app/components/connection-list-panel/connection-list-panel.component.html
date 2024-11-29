@@ -17,16 +17,33 @@
             </div>
         </div>
         <div class="chats flex flex-column gap-2" *ngIf="globalService.selectedMenuItem?.label === 'Chats'">
-            <div *ngFor="let people of chatList" (click)="handelUserSelect(people)">
+            <div *ngFor="let peopleAndMessage of chatList" (click)="handelUserSelect(peopleAndMessage)">
                 <div pRipple
-                    [ngClass]="selectedPeople.userId === people.userId ? 'flex align-items-center bg-white-alpha-30 shadow-5 p-2 cursor-pointer border-round-md hover:bg-white-alpha-20' : 'flex align-items-center bg-white-alpha-10 shadow-5 p-2 cursor-pointer border-round-md hover:bg-white-alpha-20'">
-                    <div class="profile-image">
-                        <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
-                            shape="circle" [style]="{marginTop:'0.4rem'}" />
-                    </div>
-                    <div class="content">
-                        <div class="profile-name">{{people.username}}</div>
-                        <div class="last-chat-content"></div>
+                    [ngClass]="selectedPeople.userId === peopleAndMessage.connected_user_id ? 'flex align-items-center bg-white-alpha-30 shadow-5 p-2 cursor-pointer border-round-md hover:bg-white-alpha-20' : 'flex align-items-center bg-white-alpha-10 shadow-5 p-2 cursor-pointer border-round-md hover:bg-white-alpha-20'">
+                    <div class="flex justify-content-between w-full">
+                        <div class="flex align-items-center gap-2">
+                            <div class="profile-image">
+                                <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
+                                    shape="circle" [style]="{marginTop:'0.4rem'}" />
+                            </div>
+                            <div class="content">
+                                <div class="profile-name text-lg">{{peopleAndMessage.username}}</div>
+                                <div class="last-chat-content text-sm text-gray-400">{{peopleAndMessage.last_message}}
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex flex-column">
+                                <div class="text-gray-400 text-sm">{{peopleAndMessage.last_message_time | date:'HH:mm'}}
+                                </div>
+                                <div *ngIf="peopleAndMessage.total_unread_chats !== '0'">
+                                    {{peopleAndMessage.total_unread_chats}}
+                                </div>
+                            </div>
+                            <!-- <div>
+                                <p><span class="material-icons">done</span></p>
+                            </div> -->
+                        </div>
                     </div>
                 </div>
             </div>

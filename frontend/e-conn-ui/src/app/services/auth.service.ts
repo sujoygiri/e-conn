@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { SuccessResponse, AuthData } from '../interfaces/common.interface';
-import configData from '../utils/data.util';
+import { configData } from '../utils/data.util';
 
 @Injectable({
   providedIn: 'root'

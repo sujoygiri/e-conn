@@ -6,7 +6,7 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { MenuModule } from 'primeng/menu';
 import { UtilService } from '../../services/util.service';
-import { People, SideNavigationPanelItem } from '../../interfaces/common.interface';
+import { People, PeopleAndMessage, SideNavigationPanelItem } from '../../interfaces/common.interface';
 import { CommonModule } from '@angular/common';
 import { AvatarModule } from 'primeng/avatar';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
@@ -38,7 +38,7 @@ export class ConnectionListPanelComponent implements OnDestroy {
   items: MenuItem[] | undefined;
   moreChatOptionsItems: MenuItem[] | undefined;
   visible: boolean = false;
-  chatList: People[] = [];
+  chatList: PeopleAndMessage[] = [];
   foundPeople: People[] = [];
   loading: boolean = false;
   isPeopleFound: boolean = false;
@@ -54,21 +54,32 @@ export class ConnectionListPanelComponent implements OnDestroy {
     this.moreChatOptionsItems = [
       { label: 'Delete', icon: 'pi pi-trash' },
       { label: 'Block', icon: 'pi pi-lock' },
-      { label: 'Report', icon: 'pi pi-exclamation-triangle' },
+      {
+        label: 'Report',
+        icon: 'pi pi-exclamation-triangle',
+        command: () => {
+          this.chatList[0].username = 'Keshob';
+          console.log("hi report");
+
+        }
+      },
     ];
     this.searchForm = this.formBuilder.group({
       search: ['', [Validators.required, Validators.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/)]]
     });
-    socket.on("get-connections", (data) => {
+    socket.on("get-connected-people-messages", (data) => {
       if (data.userId === this.globalService.authUser?.userId) {
         if (data.users && data.users.length > 0) {
-          data.users.forEach((user: any) => {
-            let people: People = {
-              userId: user.connected_user_id as string,
-              username: user.username as string,
-              email: user.email as string,
+          data.users.forEach((user: PeopleAndMessage) => {
+            let peopleAndMessage: PeopleAndMessage = {
+              connected_user_id: user.connected_user_id,
+              username: user.username,
+              email: user.email,
+              last_message: user.last_message,
+              total_unread_chats: user.total_unread_chats,
+              last_message_time: user.last_message_time,
             };
-            this.chatList.push(people);
+            this.chatList.push(peopleAndMessage);
           });
         }
       }
@@ -78,11 +89,7 @@ export class ConnectionListPanelComponent implements OnDestroy {
         console.log(data);
       }
     });
-    socket.on("get-latest-messages", (data) => {
-      console.log(data);
-    });
-    socket.emit("fetch-latest-messages", { userId: this.globalService.authUser?.userId });
-    socket.emit("search-connection", { userId: this.globalService.authUser?.userId });
+    socket.emit("get-connected-people-messages", { userId: this.globalService.authUser?.userId });
     this.menuItemClickEventSubscription = this.sharedService.menuItemClickedEvent.subscribe({
       next: (menuItem: SideNavigationPanelItem) => {
         console.log(menuItem);
@@ -118,21 +125,25 @@ export class ConnectionListPanelComponent implements OnDestroy {
   }
 
   addToChatList(people: People) {
-    this.chatList.push(people);
-    let newChatDetails: { user_id: string | undefined, connected_user_id: string | undefined; } = {
-      user_id: this.globalService.authUser?.userId,
-      connected_user_id: people.userId,
-    };
-    socket.emit("add-connection", newChatDetails);
-    this.visible = false;
-    this.searchForm.reset();
-    this.foundPeople = [];
+    // this.chatList.push(peopleAndMessage);
+    // let newChatDetails: { user_id: string | undefined, connected_user_id: string | undefined; } = {
+    //   user_id: this.globalService.authUser?.userId,
+    //   connected_user_id: peopleAndMessage.connected_user_id,
+    // };
+    // socket.emit("add-connection", newChatDetails);
+    // this.visible = false;
+    // this.searchForm.reset();
+    // this.foundPeople = [];
   }
 
-  handelUserSelect(people: People) {
-    this.selectedPeople = people;
-    this.globalService.selectedUser = people;
-    this.sharedService.triggerPeopleSelectEvent(people);
+  handelUserSelect(peopleAndMessage: PeopleAndMessage) {
+    this.selectedPeople = {
+      username: peopleAndMessage.username,
+      email: peopleAndMessage.email,
+      userId: peopleAndMessage.connected_user_id,
+    };
+    this.globalService.selectedUser = this.selectedPeople;
+    this.sharedService.triggerPeopleSelectEvent(this.selectedPeople);
   }
 
   resetState() {

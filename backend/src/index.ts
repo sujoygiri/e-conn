@@ -38,8 +38,8 @@ const sessionMiddleware = session({
     cookie: {
         httpOnly: true,
         maxAge: 7 * 24 * 60 * 60 * 1000,
-        sameSite: "none",
-        secure: true
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        secure: process.env.NODE_ENV === "production",
     },
     store: new pgStore({
         pool: db.pool,
@@ -105,17 +105,16 @@ io.on("connection", async (socket: Socket) => {
         io.to("global").emit("get-global-chats", { message: 'hello from global', data });
     });
     socket.on("individual-chats", async ({ sender_id, receiver_id, limit, offset }) => {
-        const getChatsQueryString = `SELECT "e-conn-app".chats.chat_id,"e-conn-app".chats.content,"e-conn-app".chats.sender_id,"e-conn-app".chats.receiver_id,"e-conn-app".chats.created_at,"e-conn-app".chat_status.is_read FROM "e-conn-app".chats LEFT JOIN "e-conn-app".chat_status ON "e-conn-app".chats.chat_id = "e-conn-app".chat_status.chat_id WHERE (sender_id = $1 AND receiver_id = $2) OR (sender_id = $2 AND receiver_id = $1) ORDER BY created_at ASC LIMIT $3 OFFSET $4`;
+        const getChatsQueryString = `SELECT "e-conn-app".chats.chat_id,"e-conn-app".chats.content,"e-conn-app".chats.sender_id,"e-conn-app".chats.receiver_id,"e-conn-app".chats.created_at,"e-conn-app".chats.is_read FROM "e-conn-app".chats WHERE (sender_id = $1 AND receiver_id = $2) OR (sender_id = $2 AND receiver_id = $1) ORDER BY created_at ASC LIMIT $3 OFFSET $4`;
         const getChatsQueryResult = await db.query(getChatsQueryString, [sender_id, receiver_id, limit, offset]);
         socket.emit("get-individual-chats", getChatsQueryResult.rows);
     });
-    socket.on("private-message", async ({ message, to }) => {
-        const chatStoreQueryString = `INSERT INTO "e-conn-app".chats (content,sender_id,receiver_id) VALUES ($1,$2,$3) RETURNING chat_id, created_at`;
-        const chatStoreQueryResult = await db.query(chatStoreQueryString, [message, userId, to]);
+    socket.on("private-message", async ({ messageId, message, to, created_at }, callback) => {
+        const chatStoreQueryString = `INSERT INTO "e-conn-app".chats (chat_id,content,sender_id,receiver_id,created_at) VALUES ($1,$2,$3,$4,$5) RETURNING chat_id, created_at`;
+        const chatStoreQueryResult = await db.query(chatStoreQueryString, [messageId, message, userId, to, created_at]);
         if (chatStoreQueryResult.command === "INSERT" && chatStoreQueryResult.rowCount === 1) {
-            io.to(to).to(userId).emit("private-message", { message, messageId: chatStoreQueryResult.rows[0].chat_id, from: userId, to, createdAt: chatStoreQueryResult.rows[0].created_at });
-            const updateChatStatusQueryString = `INSERT INTO "e-conn-app".chat_status (chat_id,user_id) VALUES ($1,$2)`;
-            await db.query(updateChatStatusQueryString, [chatStoreQueryResult.rows[0].chat_id, to]);
+            socket.to(to).emit("private-message", { message, messageId: chatStoreQueryResult.rows[0].chat_id, from: userId, to, createdAt: chatStoreQueryResult.rows[0].created_at });
+            callback({ message: "Message sent", status: "success", statusCode: 200, messageId: chatStoreQueryResult.rows[0].chat_id });
         }
     });
     socket.on("add-connection", async ({ user_id, connected_user_id }) => {
@@ -131,31 +130,30 @@ io.on("connection", async (socket: Socket) => {
             socket.emit("add-connection", connectionSuccessResponse);
         }
     });
-    socket.on("search-connection", async ({ userId }) => {
-        const connectionSearchQueryString = `SELECT "e-conn-app".user_connections.connected_user_id, "e-conn-app".users.username, "e-conn-app".users.email FROM "e-conn-app".user_connections LEFT JOIN "e-conn-app".users ON "e-conn-app".user_connections.connected_user_id = "e-conn-app".users.user_id WHERE "e-conn-app".user_connections.user_id = $1`;
-        const connectionSearchQueryResult = await db.query(connectionSearchQueryString, [userId]);
-        if (connectionSearchQueryResult.command === "SELECT" && connectionSearchQueryResult.rowCount as number > 0) {
-            let connectionSearchSuccessResponse = {
+    socket.on("message-read", async ({ byWho, sender }) => {
+        const updateMessageReadQueryString = `UPDATE "e-conn-app".chats SET is_read = true WHERE is_read = false AND receiver_id = $1 AND sender_id = $2`;
+        const updateMessageReadQueryResult = await db.query(updateMessageReadQueryString, [byWho, sender]);
+        if (updateMessageReadQueryResult.command === "UPDATE" && (updateMessageReadQueryResult.rowCount ?? 0) >= 1) {
+            io.to(sender).emit("message-read", { byWho, sender });
+        }
+    });
+    socket.on("get-connected-people-messages", async ({ userId }) => {
+
+        const getConnectedPeopleAndMessageQueryString = `WITH all_connected_people AS (SELECT uc.connected_user_id,u.username,u.email FROM "e-conn-app".user_connections uc LEFT JOIN "e-conn-app".users u ON uc.connected_user_id = u.user_id WHERE uc.user_id = $1) SELECT acp.connected_user_id, acp.username, acp.email, latest_chat.content AS last_message, COALESCE(unread_chat.total_unread, 0) AS total_unread_chats, latest_chat.created_at AS last_message_time FROM all_connected_people acp LEFT JOIN LATERAL (SELECT content, created_at FROM "e-conn-app".chats WHERE (sender_id = $1 AND receiver_id = acp.connected_user_id) OR (sender_id = acp.connected_user_id AND receiver_id = $1) ORDER BY created_at DESC LIMIT 1) latest_chat ON true LEFT JOIN (SELECT sender_id, receiver_id, COUNT(*) AS total_unread FROM "e-conn-app".chats WHERE is_read = false GROUP BY sender_id, receiver_id) unread_chat ON unread_chat.sender_id = acp.connected_user_id AND unread_chat.receiver_id = $1 ORDER BY latest_chat.created_at DESC LIMIT 10 OFFSET 0`;
+
+        let queryStart = new Date().getTime();
+        const getConnectedPeopleAndMessage = await db.query(getConnectedPeopleAndMessageQueryString, [userId]);
+        console.log(`getConnectedPeopleAndMessage: ${new Date().getTime() - queryStart} ms`);
+        if (getConnectedPeopleAndMessage.command === "SELECT" && (getConnectedPeopleAndMessage.rowCount ?? 0) > 0) {
+            let connectionDetails = {
                 message: "Connection found",
                 status: "success",
                 statusCode: 200,
                 userId,
-                users: connectionSearchQueryResult.rows
+                users: getConnectedPeopleAndMessage.rows
             };
-            socket.emit("get-connections", connectionSearchSuccessResponse);
+            socket.emit("get-connected-people-messages", connectionDetails);
         }
-    });
-    socket.on("message-read", async ({ byWho, sender }) => {
-        const updateMessageReadQueryString = `UPDATE "e-conn-app".chat_status SET is_read = true WHERE is_read = false AND user_id = $1`;
-        const updateMessageReadQueryResult = await db.query(updateMessageReadQueryString, [byWho]);
-        if (updateMessageReadQueryResult.command === "UPDATE" && updateMessageReadQueryResult.rowCount as number >= 1) {
-            io.to(sender).emit("message-read", { byWho, sender });
-        }
-    });
-    socket.on("fetch-latest-messages", async ({ userId }) => {
-        const getLatestMessagesQueryString = `SELECT * FROM "e-conn-app".chats WHERE created_at > (SELECT last_seen FROM "e-conn-app".users WHERE user_id = $1) AND receiver_id = $1 ORDER BY created_at DESC LIMIT 10`;
-        const getLatestMessagesQueryResult = await db.query(getLatestMessagesQueryString, [userId]);
-        socket.emit("get-latest-messages", getLatestMessagesQueryResult.rows);
     });
     socket.on("disconnect", async (reason) => {
         const updateUserLastSeenQueryString = `UPDATE "e-conn-app".users SET last_seen = NOW() WHERE user_id = $1`;

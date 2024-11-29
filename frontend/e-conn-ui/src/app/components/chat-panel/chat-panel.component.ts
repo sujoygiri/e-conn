@@ -9,6 +9,7 @@ import { GlobalService } from '../../services/global.service';
 import socket from '../../socket-client/socket';
 import { SharedService } from '../../services/shared.service';
 import { ChatDetail, People } from '../../interfaces/common.interface';
+import { getUUID } from '../../utils/data.util';
 
 @Component({
   selector: 'app-chat-panel',
@@ -29,13 +30,13 @@ export class ChatPanelComponent implements OnInit, OnDestroy {
   fetchChatStatus: boolean = false;
   fetchChatLimit: number = 1000;
   fetchChatOffset: number = 0;
-  chatFetchCount: number = 0;
   isMessageRead: boolean = false;
   @ViewChild('messages') messagesNode!: ElementRef;
   constructor(
     public globalService: GlobalService,
     private renderer: Renderer2,
     private sharedService: SharedService,
+    private changeDetectorRef: ChangeDetectorRef,
   ) { }
 
   ngOnInit(): void {
@@ -45,9 +46,9 @@ export class ChatPanelComponent implements OnInit, OnDestroy {
         this.fetchChatOffset = 0;
         this.chatList = [];
         socket.emit("individual-chats", { sender_id: this.globalService.authUser?.userId, receiver_id: people.userId, limit: this.fetchChatLimit, offset: this.fetchChatOffset });
-        this.chatFetchCount = 0;
         this.isMessageRead = false;
         socket.emit("message-read", { byWho: this.globalService.authUser?.userId, sender: people.userId });
+        console.log(this.globalService.selectedUser);
       }
     });
     socket.on("get-global-chats", (message) => {
@@ -57,6 +58,11 @@ export class ChatPanelComponent implements OnInit, OnDestroy {
       this.chatList = [];
       if (chats.length > 0) {
         this.chatList.unshift(...chats);
+        this.changeDetectorRef.detectChanges();
+        this.messagesNode.nativeElement.scrollTo({
+          top: this.messagesNode.nativeElement.scrollHeight,
+          behavior: 'smooth'
+        });
         console.log(this.chatList);
 
         // chats.forEach((chat: ChatDetail) => {
@@ -83,15 +89,10 @@ export class ChatPanelComponent implements OnInit, OnDestroy {
         //   }
         // });
         this.fetchChatStatus = false;
-        if (this.chatFetchCount === 0) {
-          // this.messagesNode.nativeElement.scrollTop = this.messagesNode.nativeElement.scrollHeight;
-          this.chatFetchCount = 1;
-        }
       }
     });
     socket.on("private-message", ({ message, messageId, from, to, createdAt }) => {
-      // console.log(this.globalService.selectedUser, from);
-      if (this.globalService.selectedUser?.userId === to) {
+      if (this.globalService.selectedUser?.userId === from) {
         this.chatList.push({
           chat_id: messageId,
           content: message,
@@ -130,6 +131,7 @@ export class ChatPanelComponent implements OnInit, OnDestroy {
         // console.log('message read', messageId);
         socket.emit("message-read", { byWho: this.globalService.authUser?.userId, sender: this.globalService.selectedUser?.userId });
       }
+      this.messagesNode.nativeElement.scrollTop = this.messagesNode.nativeElement.scrollHeight;
     });
     socket.on("message-read", ({ byWho, sender }) => {
       this.isMessageRead = true;
@@ -155,11 +157,29 @@ export class ChatPanelComponent implements OnInit, OnDestroy {
   sendMessage(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       event.preventDefault();
-      let userInput = this.typedMessage;
       // socket.emit("global-chats", { data: userInput });
-      socket.emit("private-message", {
-        message: userInput,
-        to: this.globalService.selectedUser?.userId
+      let messageData = {
+        messageId: getUUID(),
+        message: this.typedMessage,
+        to: this.globalService.selectedUser?.userId,
+        created_at: new Date().toISOString()
+      };
+      this.chatList.push({
+        chat_id: messageData.messageId,
+        content: messageData.message,
+        sender_id: this.globalService.authUser?.userId ?? '',
+        receiver_id: messageData.to ?? '',
+        is_read: false,
+        created_at: messageData.created_at
+      });
+      this.changeDetectorRef.detectChanges();
+      this.messagesNode.nativeElement.scrollTo({
+        top: this.messagesNode.nativeElement.scrollHeight,
+        behavior: 'smooth'
+      });
+      socket.emit("private-message", messageData, (response: any) => {
+        socket.emit("message-read", { byWho: this.globalService.authUser?.userId, sender: this.globalService.selectedUser?.userId });
+        console.log(response);
       });
       this.typedMessage = '';
     }

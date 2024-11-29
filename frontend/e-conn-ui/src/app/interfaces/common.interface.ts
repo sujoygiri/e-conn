@@ -41,3 +41,12 @@ export interface ChatDetail {
     created_at: string;
     // updated_at: string;
 }
+
+export interface PeopleAndMessage {
+    connected_user_id: string;
+    email: string;
+    last_message: string;
+    last_message_time: string;
+    total_unread_chats: string;
+    username: string;
+}
