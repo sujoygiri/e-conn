@@ -23,13 +23,13 @@
 
 /* For Firefox */
 .chat-container {
-  scrollbar-width: thin;
+  scrollbar-width: 5px;
   scrollbar-color: #2e5cb3 #f1f1f1;
 }
 
 /* For IE, Edge and Firefox */
 .chat-container {
   -ms-overflow-style: none;
-  scrollbar-width: thin;
+  scrollbar-width: 5px;
   scrollbar-color: #2e5cb3 #f1f1f1;
 }

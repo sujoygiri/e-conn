@@ -3,21 +3,23 @@ import { NextFunction, Request, Response } from "express";
 import { CustomError } from "../interfaces/common.interface";
 
 export const errorHandler = (error: CustomError, req: Request, res: Response, next: NextFunction) => {
-    const errorMessage = getProperErrorMessage(error) || "Internal Server Error";
-    const statusCode = error.statusCode || 500;
+    const modifiedMessageError = getProperErrorMessage(error) || "Internal Server Error";
+    error.statusCode = error.statusCode || 500;
     (process.env.NODE_ENV === 'development') && console.log(error.stack);
-    res.status(statusCode).json({
-        status: 'error',
-        statusCode,
-        message: errorMessage
-    });
+    res.status(error.statusCode).json(modifiedMessageError);
 };
 
-function getProperErrorMessage(error: CustomError): string {
-    let errorMessage: string = error.message;
+export const socketErrorHandler = (error: CustomError) => {
+    const modifiedMessageError = getProperErrorMessage(error) || "Internal Server Error";
+    error.statusCode = error.statusCode || 500;
+    (process.env.NODE_ENV === 'development') && console.log(error.stack);
+    return modifiedMessageError;
+};
+
+function getProperErrorMessage(error: CustomError): CustomError {
     if (error.constraint === "users_email_key") {
         error.statusCode = 409;
-        errorMessage = "Email id already exist";
+        error.message = "Email id already exist";
     }
-    return errorMessage;
+    return error;
 }

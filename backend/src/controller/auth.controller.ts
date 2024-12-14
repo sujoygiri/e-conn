@@ -3,7 +3,7 @@ import { validationResult, matchedData } from "express-validator";
 import * as bcrypt from "bcryptjs";
 
 import * as db from "../db/db-client";
-import { CustomError, SuccessResponse } from "../interfaces/common.interface";
+import { CustomError, People, SuccessResponse } from "../interfaces/common.interface";
 
 export const signupHandler = async (req: Request, res: Response, next: NextFunction) => {
     const result = validationResult(req);
@@ -15,17 +15,19 @@ export const signupHandler = async (req: Request, res: Response, next: NextFunct
             let userCreationQuery = `INSERT INTO "e-conn-app".users (username,email,password) VALUES ($1,$2,$3) RETURNING user_id`;
             let queryResult = await db.query(userCreationQuery, [username, email, hashedPassword]);
             if (queryResult.command === "INSERT" && queryResult.rowCount === 1) {
-                let userId = queryResult.rows[0]['user_id'];
+                let user_id = queryResult.rows[0]['user_id'];
                 req.session.userData = {
-                    userId
+                    user_id
                 };
                 let responseObj: SuccessResponse = {
                     status: "success",
                     statusCode: 201,
                     message: "Account created successfully",
-                    username,
-                    email,
-                    userId,
+                    userData: {
+                        username,
+                        email,
+                        user_id,
+                    }
                 };
                 res.status(responseObj.statusCode).json(responseObj);
             }
@@ -52,15 +54,17 @@ export const signinHandler = async (req: Request, res: Response, next: NextFunct
                 let isCorrectPassword = bcrypt.compareSync(password, hashedPassword);
                 if (isCorrectPassword) {
                     req.session.userData = {
-                        userId: user_id
+                        user_id: user_id
                     };
                     let responseObj: SuccessResponse = {
                         status: "success",
                         statusCode: 200,
                         message: "Signin successful",
-                        username,
-                        email,
-                        userId: user_id,
+                        userData: {
+                            username,
+                            email,
+                            user_id: user_id
+                        }
                     };
                     res.status(responseObj.statusCode).json(responseObj);
                 } else {
@@ -90,19 +94,20 @@ export const authenticationHandler = async (req: Request, res: Response, next: N
             let sessionId: string = req.session.id;
             let findSessionDataQuery = `SELECT sess FROM "e-conn-app".sessions WHERE sid=$1`;
             let sessionQueryResult = await db.query(findSessionDataQuery, [sessionId]);
-            let userData: any = sessionQueryResult?.rows[0]?.sess.userData;
+            let userData: People = sessionQueryResult?.rows[0]?.sess.userData;
             if (userData) {
-                let { userId } = userData;
                 let userDataQueryString = `SELECT username,email FROM "e-conn-app".users WHERE user_id=$1`;
-                let userDataQueryResult = await db.query(userDataQueryString, [userId]);
+                let userDataQueryResult = await db.query(userDataQueryString, [userData.user_id]);
                 let { username, email } = userDataQueryResult.rows[0];
                 let verifyResponse: SuccessResponse = {
                     status: "success",
                     statusCode: 200,
                     message: "Authentication successful",
-                    username,
-                    email,
-                    userId,
+                    userData: {
+                        username,
+                        email,
+                        user_id: userData.user_id
+                    }
                 };
                 res.status(verifyResponse.statusCode).json(verifyResponse);
             } else {

@@ -33,15 +33,15 @@ export class MenuPanelComponent implements OnInit {
     this.sideNavigationPanelItems = [
       {
         label: 'Activity',
-        icon: 'notifications',
-        iconClass: 'text-3xl',
-        styleClass: 'material-icons-outlined'
+        icon: 'bi bi-bell',
+        filledIcon: 'bi bi-bell-fill',
+        iconClass: 'text-xl',
       },
       {
         label: 'Chats',
-        icon: 'chat',
-        iconClass: 'text-2xl',
-        styleClass: 'material-icons-outlined'
+        icon: 'bi bi-chat-dots',
+        filledIcon: 'bi bi-chat-dots-fill',
+        iconClass: 'text-xl',
       },
       // {
       //   
@@ -49,7 +49,7 @@ export class MenuPanelComponent implements OnInit {
     ];
     this.profileMenuItem = {
       label: 'Profile',
-      icon: 'pi pi-user',
+      icon: 'bi bi-person-circle',
       iconClass: 'text-xl',
       styleClass: 'flex'
     };

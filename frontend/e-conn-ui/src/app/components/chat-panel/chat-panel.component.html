@@ -1,9 +1,8 @@
 <div class="w-full h-full flex flex-column">
     <div class="h-4rem">
         <div class="flex align-items-center" *ngIf="globalService.selectedUser !== undefined">
-            <div class="profile-image">
-                <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle"
-                    [style]="{marginTop:'0.4rem'}" />
+            <div class="profile-image flex align-items-center justify-content-center">
+                <i class="bi bi-person-circle text-3xl"></i>
             </div>
             <div class="profile-name">{{globalService.selectedUser.username}}</div>
         </div>
@@ -13,7 +12,7 @@
             #messages (scroll)="onScroll($event)">
             <div class="py-2 pl-0 messages">
                 <div *ngFor="let chat of chatList">
-                    @if (chat.sender_id === globalService.authUser?.userId) {
+                    @if (chat.sender_id === globalService.authUser?.user_id) {
                     <div class="my-1">
                         <div class="flex align-items-center justify-content-end px-7">
                             <div class="content flex bg-primary-900 py-1 px-2 border-round-md">
@@ -21,7 +20,7 @@
                                     <span>{{chat.content}}</span>
                                 </div>
                                 <div class="status" *ngIf="chat.is_read || isMessageRead">
-                                    <span class="material-icons">done</span>
+                                    <i class="bi bi-check"></i>
                                 </div>
                             </div>
                         </div>

@@ -1,16 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { PrimeNGConfig } from 'primeng/api';
-
-import { UserInputComponent } from "./components/user-input/user-input.component";
-import { NavbarComponent } from "./components/navbar/navbar.component";
-import { LoadingScreenComponent } from "./components/loading-screen/loading-screen.component";
 import { CommonModule } from '@angular/common';
+
 import { AuthService } from './services/auth.service';
-import { filter } from 'rxjs';
 import { GlobalService } from './services/global.service';
 import { People } from './interfaces/common.interface';
 import socket from './socket-client/socket';
+import { LoadingScreenComponent } from "./components/loading-screen/loading-screen.component";
+import { AuthenticationComponent } from './components/authentication/authentication.component';
+import { NavbarComponent } from "./components/navbar/navbar.component";
+import { HomeComponent } from "./components/home/home.component";
 
 
 @Component({
@@ -18,8 +17,9 @@ import socket from './socket-client/socket';
   standalone: true,
   imports: [
     CommonModule,
-    RouterOutlet,
     LoadingScreenComponent,
+    HomeComponent,
+    AuthenticationComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
@@ -31,46 +31,33 @@ export class AppComponent implements OnInit {
   constructor(
     private primengConfig: PrimeNGConfig,
     private authService: AuthService,
-    private router: Router,
-    private globalService: GlobalService,
+    public globalService: GlobalService,
   ) {
   }
 
   ngOnInit(): void {
     this.primengConfig.ripple = true;
-    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
-      this.currentUrl = event.url;
-    });
     this.authService.verifyUser().subscribe({
       next: (response) => {
-        if (response.status === "success" && response.statusCode === 200) {
+        if (response.status === "success" && response.statusCode === 200 && !Array.isArray(response.userData)) {
           let userDetails: People = {
-            username: response.username as string,
-            email: response.email as string,
-            userId: response.userId as string,
+            username: response.userData?.username ?? '',
+            email: response.userData?.email ?? '',
+            user_id: response.userData?.user_id ?? '',
           };
           this.globalService.authUser = userDetails;
           window.localStorage.setItem("userData", JSON.stringify(userDetails));
           this.loading = false;
+          this.globalService.isAuthenticated = true;
           socket.auth = {
-            userId: response.userId,
+            user_id: response.userData?.user_id,
           };
           socket.connect();
-          this.router.navigateByUrl("/");
         }
       },
       error: (err) => {
         this.loading = false;
-        switch (this.currentUrl) {
-          case "/signin":
-          case "/signup":
-            break;
-          default: {
-            this.currentUrl = "/signin";
-            break;
-          }
-        }
-        this.router.navigateByUrl(this.currentUrl);
+        this.globalService.isAuthenticated = false;
       }
     });
   }

@@ -5,6 +5,7 @@ import { People, SideNavigationPanelItem } from '../interfaces/common.interface'
   providedIn: 'root'
 })
 export class GlobalService {
+  isAuthenticated: boolean = false;
   authUser: People | undefined = undefined;
   selectedUser: People | undefined = undefined;
   selectedMenuItem: SideNavigationPanelItem | undefined = undefined;

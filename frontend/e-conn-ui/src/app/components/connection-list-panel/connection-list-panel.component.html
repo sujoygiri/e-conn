@@ -1,30 +1,39 @@
-<div class="card w-25rem h-screen">
+<div class="card w-25rem h-screen relative overflow-hidden">
     <div class="card-body flex flex-column gap-2 p-3 w-full h-full overflow-x-hidden overflow-y-auto bg-gray-900">
         <div class="title flex justify-content-between">
-            <div class="text-xl">{{globalService.selectedMenuItem?.label}}</div>
-            <div class="flex align-items-center gap-1">
-                <div pRipple class="add-connection cursor-pointer hover:bg-white-alpha-10 p-2 border-round-md"
-                    (click)="addConnection()">
-                    <span class="material-icons">person_add_alt_1</span>
+            <div class="flex align-items-center text-xl">{{globalService.selectedMenuItem?.label}}</div>
+            <div class="flex align-items-center gap-1 relative"> <!-- new private chat -->
+                <div pRipple class="cursor-pointer hover:bg-white-alpha-10 p-2 border-round-md"
+                    (click)="openOrCloseOverlayPanel('new-private-chat')">
+                    <i class="bi bi-person-plus-fill text-2xl"></i>
                 </div>
-                <div pRipple class="more-options cursor-pointer hover:bg-white-alpha-10 p-2 border-round-md"
-                    (click)="moreChatOptions.toggle($event)">
-                    <span class="material-icons">more_vert</span>
+                <div pRipple class="cursor-pointer hover:bg-white-alpha-10 p-2 border-round-md" hideOnClickOutside
+                    (clickOutside)="isMoreOptionsVisible = false" (click)="toggleMoreOptionsDropdown()">
+                    <!-- more options -->
+                    <i class="bi bi-three-dots-vertical text-2xl"></i>
                 </div>
-                <div class="more-chat-options">
-                    <p-menu #moreChatOptions [model]="moreChatOptionsItems" [popup]="true" />
+                <div class="more-options-dropdown absolute top-100 right-0 w-max z-5" @fadeInOut
+                    *ngIf="isMoreOptionsVisible">
+                    <div class="flex flex-column gap-2 bg-black-alpha-90 p-2 border-round-md relative">
+                        <div *ngFor="let option of moreChatOptionsItems">
+                            <div class="flex align-items-center gap-2 hover:bg-white-alpha-10 p-2 border-round-md cursor-pointer"
+                                (click)="option?.command()">
+                                <div class="dropdown-menu-icon"><i [ngClass]="option.icon"></i></div>
+                                <div class="dropdown-menu-title">{{option.title}}</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="chats flex flex-column gap-2" *ngIf="globalService.selectedMenuItem?.label === 'Chats'">
             <div *ngFor="let peopleAndMessage of chatList" (click)="handelUserSelect(peopleAndMessage)">
                 <div pRipple
-                    [ngClass]="selectedPeople.userId === peopleAndMessage.connected_user_id ? 'flex align-items-center bg-white-alpha-30 shadow-5 p-2 cursor-pointer border-round-md hover:bg-white-alpha-20' : 'flex align-items-center bg-white-alpha-10 shadow-5 p-2 cursor-pointer border-round-md hover:bg-white-alpha-20'">
+                    [ngClass]="selectedPeople.user_id === peopleAndMessage.connected_user_id ? 'flex align-items-center bg-white-alpha-30 shadow-5 p-2 cursor-pointer border-round-md hover:bg-white-alpha-20' : 'flex align-items-center bg-white-alpha-10 shadow-5 p-2 cursor-pointer border-round-md hover:bg-white-alpha-20'">
                     <div class="flex justify-content-between w-full">
                         <div class="flex align-items-center gap-2">
-                            <div class="profile-image">
-                                <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
-                                    shape="circle" [style]="{marginTop:'0.4rem'}" />
+                            <div class="profile-image flex align-items-center justify-content-center">
+                                <i class="bi bi-person-circle text-3xl"></i>
                             </div>
                             <div class="content">
                                 <div class="profile-name text-lg">{{peopleAndMessage.username}}</div>
@@ -36,8 +45,11 @@
                             <div class="flex flex-column">
                                 <div class="text-gray-400 text-sm">{{peopleAndMessage.last_message_time | date:'HH:mm'}}
                                 </div>
-                                <div *ngIf="peopleAndMessage.total_unread_chats !== '0'">
-                                    {{peopleAndMessage.total_unread_chats}}
+                                <div class="flex align-items-center justify-content-center text-white text-sm bg-bluegray-400 border-circle"
+                                    *ngIf="globalService.selectedUser?.user_id !== peopleAndMessage.connected_user_id && peopleAndMessage.total_unread_chats !== '0'">
+                                    <div class="">
+                                        {{peopleAndMessage.total_unread_chats}}
+                                    </div>
                                 </div>
                             </div>
                             <!-- <div>
@@ -52,8 +64,135 @@
 
         </div>
     </div>
+    <!-- new private connection panel -->
+    <div class="card-body absolute top-0 left-0 w-full h-full surface-ground z-2" *ngIf="isNewPrivateChatPanelVisible"
+        @slideInOut>
+        <div class="flex flex-column justify-content-center">
+            <div class="flex align-items-center p-2">
+                <div class="flex align-items-center justify-content-center cursor-pointer mr-4 p-2 border-round-lg hover:bg-white-alpha-10 hover:text-primary transition-all transition-duration-200 transition-ease-in"
+                    (click)="openOrCloseOverlayPanel('new-private-chat')">
+                    <i class="bi bi-arrow-left text-xl text-white"></i>
+                </div>
+                <div class="text-xl text-white">Start New Conversation</div>
+            </div>
+            <div class="px-3"> <!-- panel content -->
+                <div class="flex flex-column">
+                    <input
+                        class="border-none border-bottom-1 border-gray-400 focus:border-primary outline-none surface-ground shadow-none p-2 transition-all transition-duration-200 transition-ease-in"
+                        type="text" placeholder="Search name or email" (input)="searchPeople($event,'private')">
+                </div>
+                <div class="flex flex-column mt-3 gap-2">
+                    <div *ngFor="let people of foundPeople"> <!-- found people -->
+                        <div class="flex align-items-center gap-2 p-1 border-round-lg bg-white-alpha-10 cursor-pointer hover:bg-white-alpha-30 hover:text-primary"
+                            (click)="startPrivateChat(people)">
+                            <div>
+                                <i class="bi bi-person-circle text-lg"></i>
+                            </div>
+                            <div>{{people.username}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- select group member panel -->
+    <div class="card-body absolute top-0 left-0 w-full h-full surface-ground z-2" *ngIf="isNewGroupPanelVisible"
+        @slideInOut>
+        <div class="flex flex-column justify-content-center">
+            <div class="flex align-items-center p-2">
+                <div class="flex align-items-center justify-content-center cursor-pointer mr-4 p-2 border-round-lg hover:bg-white-alpha-10 hover:text-primary transition-all transition-duration-200 transition-ease-in"
+                    (click)="openOrCloseOverlayPanel('new-group')">
+                    <i class="bi bi-arrow-left text-xl text-white"></i>
+                </div>
+                <div class="text-xl text-white">Add Group Members</div>
+            </div>
+            <div class="px-3"> <!-- panel content -->
+                <div class="flex flex-column">
+                    <div class="flex flex-wrap gap-2">
+                        <div *ngFor="let member of groupMembers"
+                            class="flex align-items-center gap-2 p-1 border-round-lg bg-white-alpha-10">
+                            <!-- member chips -->
+                            <div>
+                                <i class="bi bi-person-circle text-lg"></i>
+                            </div>
+                            <div>{{member.username}}</div>
+                            <div class="flex align-items-center justify-content-center cursor-pointer p-1 border-round-lg hover:bg-white-alpha-30 hover:text-primary"
+                                (click)="addOrRemoveGroupMember(member, false)">
+                                <i class="bi bi-x"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <input
+                        class="border-none border-bottom-1 border-gray-400 focus:border-primary outline-none surface-ground shadow-none p-2 transition-all transition-duration-200 transition-ease-in"
+                        type="text" placeholder="Search name or email" (input)="searchPeople($event,'group')">
+                </div>
+                <div class="flex flex-column mt-3 gap-2">
+                    <div *ngFor="let people of alreadyConnectedPeople"> <!-- already connected people -->
+                        <div class="flex align-items-center gap-2 p-1 border-round-lg bg-white-alpha-10 cursor-pointer hover:bg-white-alpha-30 hover:text-primary"
+                            (click)="addOrRemoveGroupMember(people, true)">
+                            <div>
+                                <i class="bi bi-person-circle text-lg"></i>
+                            </div>
+                            <div>{{people.username}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute bottom-0 left-0 w-full" *ngIf="groupMembers.length > 0" @slideInOut>
+                <!-- button for group info -->
+                <div class="flex justify-content-center align-items-center py-3 px-2 bg-gray-900">
+                    <p-button [raised]="true" styleClass="bg-teal-500 hover:bg-teal-600 move-icon-left" [rounded]="true"
+                        size="small" (onClick)="openOrCloseOverlayPanel('new-group-info')">
+                        <i class="bi bi-arrow-right text-2xl text-white h-100 w-100"></i>
+                    </p-button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- group info panel -->
+    <div class="card-body absolute top-0 left-0 w-full h-full surface-ground z-3" *ngIf="isNewGroupInfoPanelVisible"
+        @slideInOut>
+        <div class="flex flex-column justify-content-center">
+            <div class="flex align-items-center p-2">
+                <div class="flex align-items-center justify-content-center cursor-pointer mr-4 p-2 border-round-lg hover:bg-white-alpha-10 hover:text-primary transition-all transition-duration-200 transition-ease-in"
+                    (click)="openOrCloseOverlayPanel('new-group-info')">
+                    <i class="bi bi-arrow-left text-xl text-white"></i>
+                </div>
+                <div class="text-xl text-white">Enter Group Info</div>
+            </div>
+            <div class="px-3"> <!-- group info panel content -->
+                <div class="flex flex-column align-items-center justify-content-center">
+                    <!-- group image -->
+                    <div
+                        class="cursor-pointer flex relative h-12rem w-12rem align-items-center justify-content-center bg-gray-900 border-circle">
+                        <i class="bi bi-people-fill text-8xl text-gray-700"></i>
+                        <div
+                            class="absolute w-full h-full flex flex-column gap-2 align-items-center justify-content-center">
+                            <i class="bi bi-camera-fill text-3xl text-white"></i>
+                            <div class="text-sm text-white uppercase">Add Group Image</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-column mt-3 gap-2">
+                    <div class="flex flex-column"> <!-- group name -->
+                        <input type="text" name="group-name" id="group-name" placeholder="Group Name"
+                            class="border-none outline-none border-bottom-1 border-gray-400 focus:border-primary surface-ground p-2">
+                    </div>
+                    <div class="flex flex-column"> <!-- group description -->
+                        <div [contentEditable]="true"
+                            class="border-none outline-none border-bottom-1 border-gray-400 focus:border-primary surface-ground p-2 mt-2 select-text cursor-text h-auto"
+                            #groupDescription title="Group Description (optional)" role="textbox"></div>
+                        <textarea rows="1" name="" id="" (input)="handelGroupDescriptionFieldStyle($event)"
+                            (blur)="demo($event)"
+                            class="group-description w-full border-none outline-none border-bottom-1 border-gray-400 focus:border-primary surface-ground p-2"
+                            placeholder="Group Description (optional)"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div class="card flex justify-content-center">
+<!-- <div class="card flex justify-content-center">
     <p-dialog header="Add people" [modal]="true" [(visible)]="visible" [style]="{ width: '30rem' }"
         [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false" [dismissableMask]="true"
         (onHide)="resetState()" position="top">
@@ -85,4 +224,4 @@
             </div>
         </div>
     </p-dialog>
-</div>
+</div> -->

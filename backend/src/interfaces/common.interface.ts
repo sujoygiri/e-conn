@@ -11,11 +11,15 @@ export interface CustomError extends Error {
     // errorMessage?:string;
 }
 
+export interface People {
+    user_id: string;
+    username: string;
+    email: string;
+}
+
 export interface SuccessResponse {
     status: "success" | "fail";
     statusCode: number;
     message: string;
-    userId?: string;
-    username?: string;
-    email?: string;
+    userData?: People | People[];
 }
