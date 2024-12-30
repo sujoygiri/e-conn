@@ -1,7 +1,10 @@
-:host ::ng-deep .p-menu {
-  transform-origin: right bottom;
-  transform: translateX(-80%); /* Position the menu to the left */
-}
 .card-body {
   border-right: 0.1rem solid #166daf;
+}
+:host ::ng-deep .p-button {
+  transform: translateX(0);
+  &:hover i {
+    transition: transform 0.2s ease-in-out;
+    transform: translateX(5px);
+  }
 }

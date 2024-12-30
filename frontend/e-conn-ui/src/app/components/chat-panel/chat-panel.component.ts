@@ -9,6 +9,7 @@ import { GlobalService } from '../../services/global.service';
 import socket from '../../socket-client/socket';
 import { SharedService } from '../../services/shared.service';
 import { ChatDetail, People } from '../../interfaces/common.interface';
+import { getUUID } from '../../utils/data.util';
 
 @Component({
   selector: 'app-chat-panel',
@@ -29,13 +30,13 @@ export class ChatPanelComponent implements OnInit, OnDestroy {
   fetchChatStatus: boolean = false;
   fetchChatLimit: number = 1000;
   fetchChatOffset: number = 0;
-  chatFetchCount: number = 0;
   isMessageRead: boolean = false;
   @ViewChild('messages') messagesNode!: ElementRef;
   constructor(
     public globalService: GlobalService,
     private renderer: Renderer2,
     private sharedService: SharedService,
+    private changeDetectorRef: ChangeDetectorRef,
   ) { }
 
   ngOnInit(): void {
@@ -44,10 +45,10 @@ export class ChatPanelComponent implements OnInit, OnDestroy {
         this.fetchChatStatus = true;
         this.fetchChatOffset = 0;
         this.chatList = [];
-        socket.emit("individual-chats", { sender_id: this.globalService.authUser?.userId, receiver_id: people.userId, limit: this.fetchChatLimit, offset: this.fetchChatOffset });
-        this.chatFetchCount = 0;
+        socket.emit("individual-chats", { sender_id: this.globalService.authUser?.user_id, receiver_id: people.user_id, limit: this.fetchChatLimit, offset: this.fetchChatOffset });
         this.isMessageRead = false;
-        socket.emit("message-read", { byWho: this.globalService.authUser?.userId, sender: people.userId });
+        socket.emit("message-read", { byWho: this.globalService.authUser?.user_id, sender: people.user_id });
+        console.log(this.globalService.selectedUser);
       }
     });
     socket.on("get-global-chats", (message) => {
@@ -57,10 +58,15 @@ export class ChatPanelComponent implements OnInit, OnDestroy {
       this.chatList = [];
       if (chats.length > 0) {
         this.chatList.unshift(...chats);
+        this.changeDetectorRef.detectChanges();
+        this.messagesNode.nativeElement.scrollTo({
+          top: this.messagesNode.nativeElement.scrollHeight,
+          behavior: 'smooth'
+        });
         console.log(this.chatList);
 
         // chats.forEach((chat: ChatDetail) => {
-        //   if (chat.sender_id === this.globalService.authUser?.userId) {
+        //   if (chat.sender_id === this.globalService.authUser?.user_id) {
         //     const receivedMessageDiv = this.renderer.createElement('div');
         //     this.renderer.setAttribute(receivedMessageDiv, 'class', 'flex justify-content-end my-1 mx-4');
         //     const receivedMessageDivContent = this.renderer.createElement('div');
@@ -83,15 +89,10 @@ export class ChatPanelComponent implements OnInit, OnDestroy {
         //   }
         // });
         this.fetchChatStatus = false;
-        if (this.chatFetchCount === 0) {
-          // this.messagesNode.nativeElement.scrollTop = this.messagesNode.nativeElement.scrollHeight;
-          this.chatFetchCount = 1;
-        }
       }
     });
     socket.on("private-message", ({ message, messageId, from, to, createdAt }) => {
-      // console.log(this.globalService.selectedUser, from);
-      if (this.globalService.selectedUser?.userId === to) {
+      if (this.globalService.selectedUser?.user_id === from) {
         this.chatList.push({
           chat_id: messageId,
           content: message,
@@ -103,7 +104,7 @@ export class ChatPanelComponent implements OnInit, OnDestroy {
       }
       // console.log(message, from, to);
       // if (this.globalService.selectedUser) {
-      //   if (this.globalService.authUser?.userId === to) {
+      //   if (this.globalService.authUser?.user_id === to) {
       //     const receivedMessageDiv = this.renderer.createElement('div');
       //     this.renderer.setAttribute(receivedMessageDiv, 'class', 'flex justify-content-start my-1 mx-4');
       //     const receivedMessageDivContent = this.renderer.createElement('div');
@@ -126,10 +127,11 @@ export class ChatPanelComponent implements OnInit, OnDestroy {
       //     // this.messagesNode.nativeElement.scrollTop = this.messagesNode.nativeElement.scrollHeight;
       //   }
       // }
-      if (this.globalService.selectedUser && this.globalService.selectedUser?.userId === from) {
+      if (this.globalService.selectedUser && this.globalService.selectedUser?.user_id === from) {
         // console.log('message read', messageId);
-        socket.emit("message-read", { byWho: this.globalService.authUser?.userId, sender: this.globalService.selectedUser?.userId });
+        socket.emit("message-read", { byWho: this.globalService.authUser?.user_id, sender: this.globalService.selectedUser?.user_id });
       }
+      this.messagesNode.nativeElement.scrollTop = this.messagesNode.nativeElement.scrollHeight;
     });
     socket.on("message-read", ({ byWho, sender }) => {
       this.isMessageRead = true;
@@ -146,7 +148,7 @@ export class ChatPanelComponent implements OnInit, OnDestroy {
     socket.on("connect", () => {
       console.log("reconnected");
       if (this.globalService.selectedUser) {
-        socket.emit("message-read", { byWho: this.globalService.authUser?.userId, sender: this.globalService.selectedUser?.userId });
+        socket.emit("message-read", { byWho: this.globalService.authUser?.user_id, sender: this.globalService.selectedUser?.user_id });
         console.log(this.globalService.selectedUser);
       }
     });
@@ -155,11 +157,29 @@ export class ChatPanelComponent implements OnInit, OnDestroy {
   sendMessage(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       event.preventDefault();
-      let userInput = this.typedMessage;
       // socket.emit("global-chats", { data: userInput });
-      socket.emit("private-message", {
-        message: userInput,
-        to: this.globalService.selectedUser?.userId
+      let messageData = {
+        messageId: getUUID(),
+        message: this.typedMessage,
+        to: this.globalService.selectedUser?.user_id,
+        created_at: new Date().toISOString()
+      };
+      this.chatList.push({
+        chat_id: messageData.messageId,
+        content: messageData.message,
+        sender_id: this.globalService.authUser?.user_id ?? '',
+        receiver_id: messageData.to ?? '',
+        is_read: false,
+        created_at: messageData.created_at
+      });
+      this.changeDetectorRef.detectChanges();
+      this.messagesNode.nativeElement.scrollTo({
+        top: this.messagesNode.nativeElement.scrollHeight,
+        behavior: 'smooth'
+      });
+      socket.emit("private-message", messageData, (response: any) => {
+        socket.emit("message-read", { byWho: this.globalService.authUser?.user_id, sender: this.globalService.selectedUser?.user_id });
+        console.log(response);
       });
       this.typedMessage = '';
     }
@@ -171,7 +191,7 @@ export class ChatPanelComponent implements OnInit, OnDestroy {
     //   const currentScrollHeight = this.messagesNode.nativeElement.scrollHeight;
     //   this.fetchChatStatus = true;
     //   this.fetchChatOffset = this.fetchChatOffset + this.fetchChatLimit;
-    //   socket.emit("individual-chats", { sender_id: this.globalService.authUser?.userId, receiver_id: this.globalService.selectedUser?.userId, limit: this.fetchChatLimit, offset: this.fetchChatOffset });
+    //   socket.emit("individual-chats", { sender_id: this.globalService.authUser?.user_id, receiver_id: this.globalService.selectedUser?.user_id, limit: this.fetchChatLimit, offset: this.fetchChatOffset });
     //   // const newScrollHeight = this.messagesNode.nativeElement.scrollHeight;
     //   // const hightDifference = newScrollHeight - currentScrollHeight;
     //   // this.messagesNode.nativeElement.scrollTop = scrollTop + hightDifference;

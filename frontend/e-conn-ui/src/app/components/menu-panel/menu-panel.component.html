@@ -5,8 +5,8 @@
                 *ngFor="let item of sideNavigationPanelItems" (click)="handelMenuItemSelect(item)">
                 <div pRipple [pTooltip]="item.label" tooltipPosition="right"
                     [ngClass]="selectedMenuItem.label === item.label ? 'p-3 border-round-lg bg-white-alpha-10 text-primary' : 'p-3 border-round-lg hover:bg-white-alpha-10 hover:text-primary transition-all transition-duration-500 transition-ease-in'">
-                    <span
-                        [ngClass]="selectedMenuItem.label === item.label ? 'material-icons' + ' ' + item.iconClass : item.styleClass + ' ' + item.iconClass">{{item.icon}}</span>
+                    <i
+                        [ngClass]="(selectedMenuItem.label === item.label ? item.filledIcon :  item.icon) + ' ' + item.iconClass"></i>
                 </div>
             </div>
         </div>
@@ -14,10 +14,9 @@
             <div class="user-profile flex align-items-center justify-content-center cursor-pointer"
                 (click)="handelMenuItemSelect(profileMenuItem)">
                 <div pRipple [pTooltip]="authUser + '&nbsp;&lpar;Me&rpar;'" tooltipPosition="right"
-                    [ngClass]="selectedMenuItem.label === 'Profile' ? 'p-2 border-round-lg bg-white-alpha-10 text-primary' : 'p-2 border-round-lg hover:bg-white-alpha-10 hover:text-primary transition-all transition-duration-500 transition-ease-in'">
-                    <div [style]="{height:'40px',width:'40px'}">
-                        <img src="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
-                            [style]="{height:'100%', width:'100%' }" />
+                    [ngClass]="selectedMenuItem.label === 'Profile' ? 'p-3 border-round-lg bg-white-alpha-10 text-primary' : 'p-3 border-round-lg hover:bg-white-alpha-10 hover:text-primary transition-all transition-duration-500 transition-ease-in'">
+                    <div class="profile-image flex align-items-center justify-content-center">
+                        <i [ngClass]="profileMenuItem.icon + ' ' + profileMenuItem.iconClass"></i>
                     </div>
                 </div>
             </div>

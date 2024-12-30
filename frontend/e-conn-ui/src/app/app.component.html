@@ -1,4 +1,9 @@
 <app-loading-screen *ngIf="loading"></app-loading-screen>
 <div *ngIf="!loading">
-    <router-outlet></router-outlet>
+    <div *ngIf="!globalService.isAuthenticated">
+        <app-authentication></app-authentication>
+    </div>
+    <div *ngIf="globalService.isAuthenticated">
+        <app-home></app-home>
+    </div>
 </div>

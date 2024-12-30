@@ -1,40 +1,42 @@
 <div class="w-full h-full flex flex-column">
     <div class="h-4rem">
         <div class="flex align-items-center" *ngIf="globalService.selectedUser !== undefined">
-            <div class="profile-image">
-                <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle"
-                    [style]="{marginTop:'0.4rem'}" />
+            <div class="profile-image flex align-items-center justify-content-center">
+                <i class="bi bi-person-circle text-3xl"></i>
             </div>
             <div class="profile-name">{{globalService.selectedUser.username}}</div>
         </div>
     </div>
-    <div class="main relative bg-gray-900 flex justify-content-center " id="chat-section">
-        <div class="messages h-full w-9 overflow-y-auto p-3" #messages (scroll)="onScroll($event)">
-            <div *ngFor="let chat of chatList">
-                @if (chat.sender_id === globalService.authUser?.userId) {
-                <div>
-                    <div class="flex align-items-center justify-content-end my-1">
-                        <div class="content flex bg-primary-900 py-1 px-2 border-round-md">
-                            <div>
-                                <span>{{chat.content}}</span>
-                            </div>
-                            <div class="status" *ngIf="chat.is_read || isMessageRead">
-                                <span class="material-icons">done</span>
+    <div class="main relative bg-gray-900 flex-1 flex-order-2">
+        <div class="chat-container absolute top-0 left-0 flex flex-column overflow-y-auto overflow-x-hidden h-full w-full m-0 p-0"
+            #messages (scroll)="onScroll($event)">
+            <div class="py-2 pl-0 messages">
+                <div *ngFor="let chat of chatList">
+                    @if (chat.sender_id === globalService.authUser?.user_id) {
+                    <div class="my-1">
+                        <div class="flex align-items-center justify-content-end px-7">
+                            <div class="content flex bg-primary-900 py-1 px-2 border-round-md">
+                                <div>
+                                    <span>{{chat.content}}</span>
+                                </div>
+                                <div class="status" *ngIf="chat.is_read || isMessageRead">
+                                    <i class="bi bi-check"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                }@else {
-                <div>
-                    <div class="flex align-items-center justify-content-start my-1">
-                        <div class="content bg-white-alpha-10 py-1 px-2 border-round-md">{{chat.content}}</div>
+                    }@else {
+                    <div class="my-1">
+                        <div class="flex align-items-center justify-content-start px-7">
+                            <div class="content bg-white-alpha-10 py-1 px-2 border-round-md">{{chat.content}}</div>
+                        </div>
                     </div>
+                    }
                 </div>
-                }
             </div>
         </div>
     </div>
-    <div class="h-5rem">
+    <div class="h-5rem flex-order-3">
         <div class="flex align-items-center justify-content-center py-3">
             <textarea class="w-9 p-3 text-lg line-height-1" pInputTextarea [cols]="80" rows="1" id="message"
                 placeholder="Type a message" [autoResize]="true" [(ngModel)]="typedMessage"
