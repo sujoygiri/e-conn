@@ -39,7 +39,7 @@
     <div class="h-5rem flex-order-3">
         <div class="flex align-items-center justify-content-center py-3">
             <textarea class="w-9 p-3 text-lg line-height-1" pInputTextarea [cols]="80" rows="1" id="message"
-                placeholder="Type a message" [autoResize]="true" [(ngModel)]="typedMessage"
+                placeholder="Type a message" [(ngModel)]="typedMessage"
                 (keydown)="sendMessage($event)"></textarea>
         </div>
     </div>

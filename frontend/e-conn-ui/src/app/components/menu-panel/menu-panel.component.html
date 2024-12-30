@@ -3,7 +3,7 @@
         <div class="top-menu flex flex-column p-2">
             <div class="menu-item flex flex-column align-items-center justify-content-center cursor-pointer mb-1 "
                 *ngFor="let item of sideNavigationPanelItems" (click)="handelMenuItemSelect(item)">
-                <div pRipple [pTooltip]="item.label" tooltipPosition="right"
+                <div tooltipPosition="right"
                     [ngClass]="selectedMenuItem.label === item.label ? 'p-3 border-round-lg bg-white-alpha-10 text-primary' : 'p-3 border-round-lg hover:bg-white-alpha-10 hover:text-primary transition-all transition-duration-500 transition-ease-in'">
                     <i
                         [ngClass]="(selectedMenuItem.label === item.label ? item.filledIcon :  item.icon) + ' ' + item.iconClass"></i>
@@ -13,7 +13,7 @@
         <div class="bottom-menu flex flex-column p-2">
             <div class="user-profile flex align-items-center justify-content-center cursor-pointer"
                 (click)="handelMenuItemSelect(profileMenuItem)">
-                <div pRipple [pTooltip]="authUser + '&nbsp;&lpar;Me&rpar;'" tooltipPosition="right"
+                <div
                     [ngClass]="selectedMenuItem.label === 'Profile' ? 'p-3 border-round-lg bg-white-alpha-10 text-primary' : 'p-3 border-round-lg hover:bg-white-alpha-10 hover:text-primary transition-all transition-duration-500 transition-ease-in'">
                     <div class="profile-image flex align-items-center justify-content-center">
                         <i [ngClass]="profileMenuItem.icon + ' ' + profileMenuItem.iconClass"></i>

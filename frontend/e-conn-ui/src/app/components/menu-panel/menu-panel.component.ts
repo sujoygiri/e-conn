@@ -1,20 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RippleModule } from 'primeng/ripple';
 
 import { NavbarComponent } from "../navbar/navbar.component";
 import { SideNavigationPanelItem } from '../../interfaces/common.interface';
 import { GlobalService } from '../../services/global.service';
 import { SharedService } from '../../services/shared.service';
-import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-menu-panel',
   standalone: true,
   imports: [
     CommonModule,
-    RippleModule,
-    TooltipModule
   ],
   templateUrl: './menu-panel.component.html',
   styleUrl: './menu-panel.component.scss'

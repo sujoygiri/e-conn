@@ -3,13 +3,6 @@ import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
-import { InputTextModule } from 'primeng/inputtext';
-import { PasswordModule } from 'primeng/password';
-import { MessagesModule } from 'primeng/messages';
-import { TooltipModule } from 'primeng/tooltip';
-import { Message, MessageService } from 'primeng/api';
 
 import { AuthService } from '../../services/auth.service';
 import { GlobalService } from '../../services/global.service';
@@ -23,17 +16,11 @@ import socket from '../../socket-client/socket';
   imports: [
     ReactiveFormsModule,
     CommonModule,
-    CardModule,
-    ButtonModule,
-    InputTextModule,
-    PasswordModule,
     NgOptimizedImage,
-    MessagesModule,
-    TooltipModule
   ],
   templateUrl: './authentication.component.html',
   styleUrl: './authentication.component.scss',
-  providers: [MessageService],
+  providers: [],
   animations: [
     // create animation for fade in right side
     trigger('fadeInRight', [
@@ -64,7 +51,6 @@ import socket from '../../socket-client/socket';
 })
 export class AuthenticationComponent implements OnInit {
   signinForm!: FormGroup;
-  messages!: Message[];
   loadingStatus: boolean = false;
   showSigninForm: boolean = true;
   signupForm!: FormGroup;
@@ -72,7 +58,6 @@ export class AuthenticationComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private authService: AuthService,
-    private messageService: MessageService,
     private globalService: GlobalService,
   ) { }
 
@@ -116,10 +101,7 @@ export class AuthenticationComponent implements OnInit {
         this.loadingStatus = false;
         let errorResponse: ErrorResponse = err.error;
         if (errorResponse.status === "error") {
-          this.messageService.add({
-            severity: errorResponse.status,
-            detail: errorResponse.message
-          });
+          
         }
       }
     });
@@ -150,10 +132,6 @@ export class AuthenticationComponent implements OnInit {
         let errorResponse: ErrorResponse = err.error;
         if (errorResponse.status === "error") {
           this.loadingStatus = false;
-          this.messageService.add({
-            severity: errorResponse.status,
-            detail: errorResponse.message
-          });
         }
       }
     });

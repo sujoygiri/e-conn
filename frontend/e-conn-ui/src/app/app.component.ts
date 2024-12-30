@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { PrimeNGConfig } from 'primeng/api';
 import { CommonModule } from '@angular/common';
 
 import { AuthService } from './services/auth.service';
@@ -29,14 +28,12 @@ export class AppComponent implements OnInit {
   loading: boolean = true;
   currentUrl: string = "";
   constructor(
-    private primengConfig: PrimeNGConfig,
     private authService: AuthService,
     public globalService: GlobalService,
   ) {
   }
 
   ngOnInit(): void {
-    this.primengConfig.ripple = true;
     this.authService.verifyUser().subscribe({
       next: (response) => {
         if (response.status === "success" && response.statusCode === 200 && !Array.isArray(response.userData)) {

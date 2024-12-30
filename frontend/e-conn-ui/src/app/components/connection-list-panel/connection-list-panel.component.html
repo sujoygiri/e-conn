@@ -141,10 +141,9 @@
             <div class="absolute bottom-0 left-0 w-full" *ngIf="groupMembers.length > 0" @slideInOut>
                 <!-- button for group info -->
                 <div class="flex justify-content-center align-items-center py-3 px-2 bg-gray-900">
-                    <p-button [raised]="true" styleClass="bg-teal-500 hover:bg-teal-600 move-icon-left" [rounded]="true"
-                        size="small" (onClick)="openOrCloseOverlayPanel('new-group-info')">
+                    <button class="btn btn-circle btn-outline" (onClick)="openOrCloseOverlayPanel('new-group-info')">
                         <i class="bi bi-arrow-right text-2xl text-white h-100 w-100"></i>
-                    </p-button>
+                    </button>
                 </div>
             </div>
         </div>

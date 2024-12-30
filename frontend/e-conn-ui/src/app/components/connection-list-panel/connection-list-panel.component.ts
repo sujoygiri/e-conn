@@ -1,22 +1,14 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MenuItem } from 'primeng/api';
-import { ButtonModule } from 'primeng/button';
-import { DialogModule } from 'primeng/dialog';
-import { InputTextModule } from 'primeng/inputtext';
-import { ChipsModule } from 'primeng/chips';
-import { MenuModule } from 'primeng/menu';
+import { Subscription } from 'rxjs';
+
 import { UtilService } from '../../services/util.service';
 import { CustomError, DropDownItem, People, PeopleAndMessage, SideNavigationPanelItem, SuccessResponse } from '../../interfaces/common.interface';
 import { CommonModule } from '@angular/common';
-import { AvatarModule } from 'primeng/avatar';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { GlobalService } from '../../services/global.service';
 import socket from '../../socket-client/socket';
 import { SharedService } from '../../services/shared.service';
-import { Subscription } from 'rxjs';
-import { RippleModule } from 'primeng/ripple';
 import { HideOnClickOutsideDirective } from '../../directives/hide-on-click-outside.directive';
 import { validateEmail } from '../../utils/inputValidation';
 
@@ -24,18 +16,10 @@ import { validateEmail } from '../../utils/inputValidation';
   selector: 'app-connection-list-panel',
   standalone: true,
   imports: [
-    MenuModule,
-    DialogModule,
-    RippleModule,
-    InputTextModule,
-    ButtonModule,
-    ChipsModule,
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
-    AvatarModule,
-    ProgressSpinnerModule,
-    HideOnClickOutsideDirective
+    HideOnClickOutsideDirective,
   ],
   templateUrl: './connection-list-panel.component.html',
   styleUrl: './connection-list-panel.component.scss',
@@ -55,17 +39,16 @@ import { validateEmail } from '../../utils/inputValidation';
         animate('300ms ease-in', style({ transform: 'translateX(0)', opacity: 1 })) // Slide in
       ]),
       transition(':leave', [
-        animate('300ms ease-out', style({ transform: 'translateX(-100%)', opacity: 0 })) // Slide out to the right
+        animate('100ms ease-out', style({ transform: 'translateX(-100%)', opacity: 1 })) // Slide out to the right
       ])
     ]),
   ]
 })
 export class ConnectionListPanelComponent implements AfterViewInit, OnDestroy {
   searchForm!: FormGroup;
-  items: MenuItem[] | undefined;
   moreChatOptionsItems: DropDownItem[] | undefined;
   chatList: PeopleAndMessage[] = [];
-  foundPeople: People[] = [];
+  foundPeople: Set<People> = new Set();
   loading: boolean = false;
   isPeopleFound: boolean = false;
   selectedPeople: People = {} as People;
@@ -111,7 +94,9 @@ export class ConnectionListPanelComponent implements AfterViewInit, OnDestroy {
     socket.on("search-new-user", (response: SuccessResponse) => {
       if (response.status === "success" && Array.isArray(response.userData)) {
         console.log(response);
-        this.foundPeople = response.userData;
+        response.userData.forEach((people: People) => {
+          this.foundPeople.add(people);
+        });
       }
     });
     socket.on("get-connected-people-messages", (data) => {
@@ -170,8 +155,10 @@ export class ConnectionListPanelComponent implements AfterViewInit, OnDestroy {
       total_unread_chats: "0",
       last_message_time: "",
     };
-    this.chatList.unshift(peopleAndMessage);
-
+    let isAlreadyConnected = this.chatList.find((chat) => chat.connected_user_id === people.user_id);
+    if (!isAlreadyConnected) {
+      this.chatList.unshift(peopleAndMessage);
+    }
     this.globalService.selectedUser = people;
     this.sharedService.triggerPeopleSelectEvent(people);
   }
@@ -236,7 +223,7 @@ export class ConnectionListPanelComponent implements AfterViewInit, OnDestroy {
         break;
       case "group":
         this.isPeopleFound = false;
-        this.foundPeople = [];
+        this.foundPeople.clear();
         break;
       default:
         break;
@@ -267,7 +254,7 @@ export class ConnectionListPanelComponent implements AfterViewInit, OnDestroy {
 
   resetState() {
     this.loading = false;
-    this.foundPeople = [];
+    this.foundPeople.clear();
     this.searchForm.reset();
     this.isPeopleFound = false;
   }

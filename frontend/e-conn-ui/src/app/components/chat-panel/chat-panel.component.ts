@@ -2,8 +2,6 @@ import { Component, OnInit, ViewChild, ElementRef, Renderer2, OnDestroy, AfterVi
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
-import { AvatarModule } from 'primeng/avatar';
-import { InputTextareaModule } from 'primeng/inputtextarea';
 
 import { GlobalService } from '../../services/global.service';
 import socket from '../../socket-client/socket';
@@ -15,9 +13,7 @@ import { getUUID } from '../../utils/data.util';
   selector: 'app-chat-panel',
   standalone: true,
   imports: [
-    AvatarModule,
     CommonModule,
-    InputTextareaModule,
     FormsModule
   ],
   templateUrl: './chat-panel.component.html',

@@ -30,10 +30,7 @@
               }
             ],
             "styles": [
-              "src/styles.scss",
-              "node_modules/primeng/resources/primeng.min.css",
-              "node_modules/primeng/resources/themes/aura-dark-cyan/theme.css",
-              "node_modules/primeflex/primeflex.min.css"
+              "src/styles.scss"
             ],
             "scripts": []
           },

@@ -4,169 +4,153 @@
             <img class="p-2" ngSrc="assets/images/loading-screen-logo.png" width="100" height="100" [priority]="true"
                 alt="Logo">
         </div>
-        <div class="card flex justify-content-center">
+        <div class="card glass w-96" *ngIf="showSigninForm" @fadeInRight>
             <!-- Signin Form -->
-            <p-card [style]="{width:'25rem'}" *ngIf="showSigninForm" @fadeInRight>
-                <ng-template pTemplate="title">
-                    <div class="flex justify-content-center">
-                        <div class="text-xl">Sign in</div>
-                    </div>
-                </ng-template>
-                <ng-template pTemplate="content">
-                    <p-messages showTransitionOptions="500ms" />
+            <div>
+                <div class="flex justify-center">
+                    <div class="text-xl">Sign in</div>
+                </div>
+                <div>
+                    <!--Need to create alert-->
+                    <!-- <p-messages showTransitionOptions="500ms" /> -->
                     <form method="post" [formGroup]="signinForm" (ngSubmit)="handelSignin()">
                         <div class="flex flex-column gap-2 mt-3">
                             <label for="email">Email</label>
                             <div class="relative">
                                 <i class="icon-position bi bi-at"></i>
-                                <input class="w-full" type="email" pInputText id="email" formControlName="email"
-                                    placeholder="john@example.com" [style]="{paddingLeft:'2.5rem'}">
+                                <input class="w-full" type="email" id="email" formControlName="email"
+                                    placeholder="john@example.com">
                             </div>
                             <div class="email-error"
                                 *ngIf="signinForm.controls['email'].invalid && signinForm.controls['email'].dirty">
-                                <p-messages severity="error" showTransitionOptions="500ms"
+                                <div role="alert" class="alert alert-error"
                                     *ngIf="signinForm.controls['email']?.errors?.['required']">
-                                    <ng-template pTemplate>
-                                        <div class="ml-2">Email is required</div>
-                                    </ng-template>
-                                </p-messages>
-                                <p-messages severity="error" showTransitionOptions="500ms"
+                                    <i class="bi bi-x-circle-fill"></i>
+                                    <span>Email is required</span>
+                                </div>
+                                <div role="alert" class="alert alert-error"
                                     *ngIf="signinForm.controls['email']?.errors?.['email']">
-                                    <ng-template pTemplate>
-                                        <div class="ml-2">Not a valid email id</div>
-                                    </ng-template>
-                                </p-messages>
+                                    <i class="bi bi-x-circle-fill"></i>
+                                    <span>Not a valid email id</span>
+                                </div>
                             </div>
                         </div>
                         <div class="flex flex-column gap-2 mt-3 relative">
                             <label for="password">Password</label>
-                            <div class="relative">
-                                <i class="icon-position bi bi-lock-fill"></i>
-                                <p-password [feedback]="false" styleClass="w-full" inputStyleClass="w-full"
-                                    [toggleMask]="true" [inputStyle]="{paddingLeft:'2.5rem'}"
-                                    formControlName="password" />
-                            </div>
+
+                            <label class="input input-bordered flex items-center gap-2">
+                                <i class="bi bi-key-fill"></i>
+                                <input type="password" class="grow" value="password" formControlName="password" />
+                                <i class="bi bi-eye-fill"></i>
+                            </label>
                             <div class="password-error"
                                 *ngIf="signinForm.controls['password'].invalid && signinForm.controls['password'].dirty">
-                                <p-messages severity="error" showTransitionOptions="500ms"
+                                <div role="alert" class="alert alert-error"
                                     *ngIf="signinForm.controls['password']?.errors?.['required']">
-                                    <ng-template pTemplate>
-                                        <div class="ml-2">Password is required</div>
-                                    </ng-template>
-                                </p-messages>
+                                    <i class="bi bi-x-circle-fill"></i>
+                                    <span>Password is required</span>
+                                </div>
                             </div>
                         </div>
                         <div class="w-full mt-3">
-                            <p-button label="Signin" [raised]="true" styleClass="w-full" type="submit"
-                                [disabled]="signinForm.invalid" [loading]="loadingStatus" />
+                            <button class="btn glass" [disabled]="signinForm.invalid" type="submit">Signin</button>
                         </div>
                     </form>
                     <div class="mt-4 flex justify-content-center align-items-center">
-                        <div class="flex justify-content-center align-items-center">Don't have an account? <p-button
-                                label="Create One" [link]="true" severity="primary" (onClick)="showSigninForm = false"
-                                styleClass="px-2" /></div>
+                        <div class="flex justify-content-center align-items-center">Don't have an account? <button
+                                class="btn btn-link" (onClick)="showSigninForm = false">Create One</button></div>
                     </div>
-                </ng-template>
-            </p-card>
+
+                </div>
+            </div>
             <!-- Signup Form -->
-            <p-card [style]="{width:'25rem'}" *ngIf="!showSigninForm" @fadeInLeft>
-                <ng-template pTemplate="title">
+            <div [style]="{width:'25rem'}" *ngIf="!showSigninForm" @fadeInLeft>
+                <div pTemplate="title">
                     <div class="flex justify-content-center">
                         <div class="text-xl">Create Account</div>
                     </div>
-                </ng-template>
-                <ng-template pTemplate="content">
-                    <p-messages showTransitionOptions="500ms" />
+                </div>
+                <div>
+                    <!--Need to create alert-->
                     <form method="post" [formGroup]="signupForm" (ngSubmit)="handelSignup()">
                         <div class="flex flex-column gap-2 mt-3">
                             <label for="username">Name</label>
                             <div class="relative">
                                 <i class="icon-position bi bi-person-fill"></i>
-                                <input class="w-full" type="text" pInputText id="username" formControlName="username"
-                                    placeholder="john" [style]="{paddingLeft:'2.5rem'}">
+                                <input class="w-full" type="text" id="username" formControlName="username"
+                                    placeholder="john">
                             </div>
                             <div class="username-error"
                                 *ngIf="signupForm.controls['username'].invalid && signupForm.controls['username'].dirty">
-                                <p-messages severity="error" showTransitionOptions="500ms"
+                                <div role="alert" class="alert alert-error"
                                     *ngIf="signupForm.controls['username']?.errors?.['required']">
-                                    <ng-template pTemplate>
-                                        <div class="ml-2">Name is required</div>
-                                    </ng-template>
-                                </p-messages>
-                                <p-messages severity="error" showTransitionOptions="500ms"
+                                    <i class="bi bi-x-circle-fill"></i>
+                                    <span>Name is required</span>
+                                </div>
+                                <div role="alert" class="alert alert-error"
                                     *ngIf="signupForm.controls['username']?.errors?.['minlength']">
-                                    <ng-template pTemplate>
-                                        <div class="ml-2">Name must be 3 or more letter long</div>
-                                    </ng-template>
-                                </p-messages>
-                                <p-messages severity="error" showTransitionOptions="500ms"
+                                    <i class="bi bi-x-circle-fill"></i>
+                                    <span>Name must be 3 or more letter long</span>
+                                </div>
+                                <div role="alert" class="alert alert-error"
                                     *ngIf="signupForm.controls['username']?.errors?.['pattern']">
-                                    <ng-template pTemplate>
-                                        <div class="ml-2">Name must contain only letters and whitespace</div>
-                                    </ng-template>
-                                </p-messages>
+                                    <i class="bi bi-x-circle-fill"></i>
+                                    <span>Name must contain only letters and whitespace</span>
+                                </div>
                             </div>
                         </div>
                         <div class="flex flex-column gap-2 mt-3">
                             <label for="email">Email</label>
                             <div class="relative">
                                 <i class="icon-position bi bi-at"></i>
-                                <input class="w-full" type="email" pInputText id="email" formControlName="email"
-                                    placeholder="john@example.com" [style]="{paddingLeft:'2.5rem'}">
+                                <input class="w-full" type="email" id="email" formControlName="email"
+                                    placeholder="john@example.com">
                             </div>
                             <div class="email-error"
                                 *ngIf="signupForm.controls['email'].invalid && signupForm.controls['email'].dirty">
-                                <p-messages severity="error" showTransitionOptions="500ms"
+                                <div role="alert" class="alert alert-error"
                                     *ngIf="signupForm.controls['email']?.errors?.['required']">
-                                    <ng-template pTemplate>
-                                        <div class="ml-2">Email is required</div>
-                                    </ng-template>
-                                </p-messages>
-                                <p-messages severity="error" showTransitionOptions="500ms"
+                                    <i class="bi bi-x-circle-fill"></i>
+                                    <span>Email is required</span>
+                                </div>
+                                <div role="alert" class="alert alert-error"
                                     *ngIf="signupForm.controls['email']?.errors?.['email']">
-                                    <ng-template pTemplate>
-                                        <div class="ml-2">Not a valid email id</div>
-                                    </ng-template>
-                                </p-messages>
+                                    <i class="bi bi-x-circle-fill"></i>
+                                    <span>Not a valid email id</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="flex flex-column gap-2 mt-3">
+                        <div class="flex flex-column gap-2 mt-3 relative">
                             <label for="password">Password</label>
-                            <div class="relative">
-                                <i class="icon-position bi bi-lock-fill"></i>
-                                <p-password styleClass="w-full" inputStyleClass="w-full" [toggleMask]="true"
-                                    [inputStyle]="{paddingLeft:'2.5rem'}" [feedback]="true" formControlName="password"
-                                    [pTooltip]="htmlTooltipContent" [escape]="false" />
-                            </div>
+                            <label class="input input-bordered flex items-center gap-2">
+                                <i class="bi bi-key-fill"></i>
+                                <input type="password" class="grow" value="password" formControlName="password" />
+                                <i class="bi bi-eye-fill"></i>
+                            </label>
                             <div class="password-error"
                                 *ngIf="signupForm.controls['password'].invalid && signupForm.controls['password'].dirty">
-                                <p-messages severity="error" showTransitionOptions="500ms"
+                                <div role="alert" class="alert alert-error"
                                     *ngIf="signupForm.controls['password']?.errors?.['required']">
-                                    <ng-template pTemplate>
-                                        <div class="ml-2">Password is required</div>
-                                    </ng-template>
-                                </p-messages>
-                                <p-messages severity="error" showTransitionOptions="500ms"
-                                    *ngIf="signupForm.controls['password']?.errors?.['pattern']">
-                                    <ng-template pTemplate>
-                                        <div class="ml-2">Not a strong password. Follow password rule</div>
-                                    </ng-template>
-                                </p-messages>
+                                    <i class="bi bi-x-circle-fill"></i>
+                                    <span>Password is required</span>
+                                </div>
+                                <div *ngIf="signupForm.controls['password']?.errors?.['pattern']">
+                                    <span>Not a strong password. Follow password rule</span>
+                                </div>
                             </div>
                         </div>
                         <div class="w-full mt-3">
-                            <p-button label="Create" [raised]="true" styleClass="w-full" type="submit"
-                                [disabled]="signupForm.invalid" [loading]="loadingStatus" />
+                            <button class="btn btn-active btn-primary" [disabled]="signupForm.invalid"
+                                type="submit">Primary</button>
                         </div>
                     </form>
                     <div class="mt-4">
-                        <div class="flex justify-content-center align-items-center">Already have an account? <p-button
-                                label="Signin" [link]="true" severity="primary" styleClass="px-2"
-                                (onClick)="showSigninForm = true" />
+                        <div class="flex justify-content-center align-items-center">Already have an account? <button
+                                class="btn btn-link" (onClick)="showSigninForm = true">Signin</button>
                         </div>
                     </div>
-                </ng-template>
-            </p-card>
+                </div>
+            </div>
         </div>
     </div>
 </div>
