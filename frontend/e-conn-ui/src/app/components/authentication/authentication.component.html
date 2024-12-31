@@ -1,49 +1,48 @@
-<div class="container fixed top-0 left-0 h-full w-full flex align-items-center justify-content-center">
-    <div class="flex flex-column">
-        <div class="logo flex justify-content-center">
+<div class="fixed top-0 left-0 h-screen w-screen flex justify-center items-center">
+    <div class="flex flex-col">
+        <div class="flex justify-center">
             <img class="p-2" ngSrc="assets/images/loading-screen-logo.png" width="100" height="100" [priority]="true"
                 alt="Logo">
         </div>
-        <div class="card glass w-96" *ngIf="showSigninForm" @fadeInRight>
-            <!-- Signin Form -->
-            <div>
-                <div class="flex justify-center">
-                    <div class="text-xl">Sign in</div>
-                </div>
-                <div>
+        <div class="card bg-primary-content w-96">
+            <div class="p-6">
+                <!-- Signin Form -->
+                <div *ngIf="showSigninForm" @fadeInRight>
+                    <div class="flex justify-center">
+                        <div class="text-xl">Sign in</div>
+                    </div>
                     <!--Need to create alert-->
                     <!-- <p-messages showTransitionOptions="500ms" /> -->
                     <form method="post" [formGroup]="signinForm" (ngSubmit)="handelSignin()">
-                        <div class="flex flex-column gap-2 mt-3">
-                            <label for="email">Email</label>
-                            <div class="relative">
-                                <i class="icon-position bi bi-at"></i>
-                                <input class="w-full" type="email" id="email" formControlName="email"
-                                    placeholder="john@example.com">
+                        <div class="flex flex-col mt-3">
+                            <div class="label">
+                                <span class="label-text">Email</span>
                             </div>
-                            <div class="email-error"
+                            <label class="input input-bordered flex items-center gap-2" for="email">
+                                <i class="bi bi-at"></i>
+                                <input type="email" id="email" formControlName="email">
+                            </label>
+                            <div class="email-error mt-2"
                                 *ngIf="signinForm.controls['email'].invalid && signinForm.controls['email'].dirty">
-                                <div role="alert" class="alert alert-error"
-                                    *ngIf="signinForm.controls['email']?.errors?.['required']">
+                                <div role="alert" class="alert alert-error">
                                     <i class="bi bi-x-circle-fill"></i>
-                                    <span>Email is required</span>
-                                </div>
-                                <div role="alert" class="alert alert-error"
-                                    *ngIf="signinForm.controls['email']?.errors?.['email']">
-                                    <i class="bi bi-x-circle-fill"></i>
-                                    <span>Not a valid email id</span>
+                                    <span *ngIf="signinForm.controls['email']?.errors?.['required']">Email is
+                                        required</span>
+                                    <span *ngIf="signinForm.controls['email']?.errors?.['email']">Not a valid email
+                                        id</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="flex flex-column gap-2 mt-3 relative">
-                            <label for="password">Password</label>
-
+                        <div class="flex flex-col mt-3 relative">
+                            <div class="label">
+                                <span class="label-text">Password</span>
+                            </div>
                             <label class="input input-bordered flex items-center gap-2">
                                 <i class="bi bi-key-fill"></i>
                                 <input type="password" class="grow" value="password" formControlName="password" />
                                 <i class="bi bi-eye-fill"></i>
                             </label>
-                            <div class="password-error"
+                            <div class="password-error mt-2"
                                 *ngIf="signinForm.controls['password'].invalid && signinForm.controls['password'].dirty">
                                 <div role="alert" class="alert alert-error"
                                     *ngIf="signinForm.controls['password']?.errors?.['required']">
@@ -52,101 +51,94 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="w-full mt-3">
-                            <button class="btn glass" [disabled]="signinForm.invalid" type="submit">Signin</button>
+                        <div class="flex justify-center items-center w-full mt-4">
+                            <button class="btn btn-primary cursor-pointer w-full" [disabled]="signinForm.invalid"
+                                type="submit">Signin</button>
                         </div>
                     </form>
-                    <div class="mt-4 flex justify-content-center align-items-center">
-                        <div class="flex justify-content-center align-items-center">Don't have an account? <button
-                                class="btn btn-link" (onClick)="showSigninForm = false">Create One</button></div>
+                    <div class="mt-4 flex justify-center items-center">
+                        <div class="flex justify-center items-center">Don't have an account? <button
+                                class="btn btn-link" (click)="showSigninForm = false">Create One</button></div>
                     </div>
 
                 </div>
-            </div>
-            <!-- Signup Form -->
-            <div [style]="{width:'25rem'}" *ngIf="!showSigninForm" @fadeInLeft>
-                <div pTemplate="title">
-                    <div class="flex justify-content-center">
+                <!-- Signup Form -->
+                <div *ngIf="!showSigninForm" @fadeInLeft>
+                    <div class="flex justify-center">
                         <div class="text-xl">Create Account</div>
                     </div>
-                </div>
-                <div>
-                    <!--Need to create alert-->
-                    <form method="post" [formGroup]="signupForm" (ngSubmit)="handelSignup()">
-                        <div class="flex flex-column gap-2 mt-3">
-                            <label for="username">Name</label>
-                            <div class="relative">
-                                <i class="icon-position bi bi-person-fill"></i>
-                                <input class="w-full" type="text" id="username" formControlName="username"
-                                    placeholder="john">
-                            </div>
-                            <div class="username-error"
-                                *ngIf="signupForm.controls['username'].invalid && signupForm.controls['username'].dirty">
-                                <div role="alert" class="alert alert-error"
-                                    *ngIf="signupForm.controls['username']?.errors?.['required']">
-                                    <i class="bi bi-x-circle-fill"></i>
-                                    <span>Name is required</span>
+                    <div>
+                        <!--Need to create alert-->
+                        <form method="post" [formGroup]="signupForm" (ngSubmit)="handelSignup()">
+                            <div class="flex flex-col mt-3">
+                                <div class="label">
+                                    <span class="label-text">Name</span>
                                 </div>
-                                <div role="alert" class="alert alert-error"
-                                    *ngIf="signupForm.controls['username']?.errors?.['minlength']">
-                                    <i class="bi bi-x-circle-fill"></i>
-                                    <span>Name must be 3 or more letter long</span>
+                                <div class="input input-bordered flex items-center gap-2">
+                                    <i class="bi bi-person-fill"></i>
+                                    <input class="w-full" type="text" id="username" formControlName="username">
                                 </div>
-                                <div role="alert" class="alert alert-error"
-                                    *ngIf="signupForm.controls['username']?.errors?.['pattern']">
-                                    <i class="bi bi-x-circle-fill"></i>
-                                    <span>Name must contain only letters and whitespace</span>
+                                <div class="username-error mt-2"
+                                    *ngIf="signupForm.controls['username'].invalid && signupForm.controls['username'].dirty">
+                                    <div role="alert" class="alert alert-error">
+                                        <i class="bi bi-x-circle-fill"></i>
+                                        <span *ngIf="signupForm.controls['username']?.errors?.['required']">Name is
+                                            required</span>
+                                        <span *ngIf="signupForm.controls['username']?.errors?.['minlength']">Name must
+                                            be 3 or more letter long</span>
+                                        <span *ngIf="signupForm.controls['username']?.errors?.['pattern']">Name must
+                                            contain only letters and whitespace</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="flex flex-column gap-2 mt-3">
-                            <label for="email">Email</label>
-                            <div class="relative">
-                                <i class="icon-position bi bi-at"></i>
-                                <input class="w-full" type="email" id="email" formControlName="email"
-                                    placeholder="john@example.com">
-                            </div>
-                            <div class="email-error"
-                                *ngIf="signupForm.controls['email'].invalid && signupForm.controls['email'].dirty">
-                                <div role="alert" class="alert alert-error"
-                                    *ngIf="signupForm.controls['email']?.errors?.['required']">
-                                    <i class="bi bi-x-circle-fill"></i>
-                                    <span>Email is required</span>
+                            <div class="flex flex-col mt-3">
+                                <div class="label">
+                                    <span class="label-text">Email</span>
                                 </div>
-                                <div role="alert" class="alert alert-error"
-                                    *ngIf="signupForm.controls['email']?.errors?.['email']">
-                                    <i class="bi bi-x-circle-fill"></i>
-                                    <span>Not a valid email id</span>
+                                <div class="input input-bordered flex items-center gap-2">
+                                    <i class="icon-position bi bi-at"></i>
+                                    <input class="w-full" type="email" id="email" formControlName="email">
+                                </div>
+                                <div class="email-error mt-2"
+                                    *ngIf="signupForm.controls['email'].invalid && signupForm.controls['email'].dirty">
+                                    <div role="alert" class="alert alert-error">
+                                        <i class="bi bi-x-circle-fill"></i>
+                                        <span *ngIf="signupForm.controls['email']?.errors?.['required']">Email is
+                                            required</span>
+                                        <span *ngIf="signupForm.controls['email']?.errors?.['email']">Not a valid email
+                                            id</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="flex flex-column gap-2 mt-3 relative">
-                            <label for="password">Password</label>
-                            <label class="input input-bordered flex items-center gap-2">
-                                <i class="bi bi-key-fill"></i>
-                                <input type="password" class="grow" value="password" formControlName="password" />
-                                <i class="bi bi-eye-fill"></i>
-                            </label>
-                            <div class="password-error"
-                                *ngIf="signupForm.controls['password'].invalid && signupForm.controls['password'].dirty">
-                                <div role="alert" class="alert alert-error"
-                                    *ngIf="signupForm.controls['password']?.errors?.['required']">
-                                    <i class="bi bi-x-circle-fill"></i>
-                                    <span>Password is required</span>
+                            <div class="flex flex-col mt-3">
+                                <div class="label">
+                                    <span class="label-text">Password</span>
                                 </div>
-                                <div *ngIf="signupForm.controls['password']?.errors?.['pattern']">
-                                    <span>Not a strong password. Follow password rule</span>
+                                <label class="input input-bordered flex items-center gap-2">
+                                    <i class="bi bi-key-fill"></i>
+                                    <input type="password" class="grow" value="password" formControlName="password" />
+                                    <i class="bi bi-eye-fill"></i>
+                                </label>
+                                <div class="password-error mt-2"
+                                    *ngIf="signupForm.controls['password'].invalid && signupForm.controls['password'].dirty">
+                                    <div role="alert" class="alert alert-error">
+                                        <i class="bi bi-x-circle-fill"></i>
+                                        <span *ngIf="signupForm.controls['password']?.errors?.['required']">Password is
+                                            required</span>
+                                        <span *ngIf="signupForm.controls['password']?.errors?.['pattern']">Not a strong
+                                            password. Follow password rule</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="w-full mt-3">
-                            <button class="btn btn-active btn-primary" [disabled]="signupForm.invalid"
-                                type="submit">Primary</button>
-                        </div>
-                    </form>
-                    <div class="mt-4">
-                        <div class="flex justify-content-center align-items-center">Already have an account? <button
-                                class="btn btn-link" (onClick)="showSigninForm = true">Signin</button>
+                            <div class="w-full mt-3 flex items-center justify-center">
+                                <button class="btn btn-active btn-primary w-full" [disabled]="signupForm.invalid"
+                                    type="submit">Create</button>
+                            </div>
+                        </form>
+                        <div class="mt-4 flex justify-content-center align-items-center">
+                            <div>Already have an account? <button class="btn btn-link"
+                                    (click)="showSigninForm = true">Signin</button>
+                            </div>
                         </div>
                     </div>
                 </div>
