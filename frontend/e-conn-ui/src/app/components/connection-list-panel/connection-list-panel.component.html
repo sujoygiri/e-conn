@@ -1,22 +1,21 @@
-<div class="card w-25rem h-screen relative overflow-hidden">
-    <div class="card-body flex flex-column gap-2 p-3 w-full h-full overflow-x-hidden overflow-y-auto bg-gray-900">
-        <div class="title flex justify-content-between">
-            <div class="flex align-items-center text-xl">{{globalService.selectedMenuItem?.label}}</div>
-            <div class="flex align-items-center gap-1 relative"> <!-- new private chat -->
-                <div pRipple class="cursor-pointer hover:bg-white-alpha-10 p-2 border-round-md"
+<div class="w-full h-screen relative overflow-hidden">
+    <div class="flex flex-col gap-2 p-3 w-full h-full overflow-x-hidden overflow-y-auto bg-gray-800">
+        <div class="flex justify-between">
+            <div class="flex items-center text-xl">{{globalService.selectedMenuItem?.label}}</div>
+            <div class="flex items-center gap-1 relative"> <!-- new private chat -->
+                <div class="cursor-pointer hover:bg-gray-700 p-2 rounded-lg hover:text-primary"
                     (click)="openOrCloseOverlayPanel('new-private-chat')">
-                    <i class="bi bi-person-plus-fill text-2xl"></i>
+                    <i class="bi bi-person-plus-fill text-xl"></i>
                 </div>
-                <div pRipple class="cursor-pointer hover:bg-white-alpha-10 p-2 border-round-md" hideOnClickOutside
+                <div class="cursor-pointer hover:bg-gray-700 hover:text-primary p-2 rounded-lg" hideOnClickOutside
                     (clickOutside)="isMoreOptionsVisible = false" (click)="toggleMoreOptionsDropdown()">
                     <!-- more options -->
-                    <i class="bi bi-three-dots-vertical text-2xl"></i>
+                    <i class="bi bi-three-dots-vertical text-xl"></i>
                 </div>
-                <div class="more-options-dropdown absolute top-100 right-0 w-max z-5" @fadeInOut
-                    *ngIf="isMoreOptionsVisible">
-                    <div class="flex flex-column gap-2 bg-black-alpha-90 p-2 border-round-md relative">
+                <div class="absolute top-full right-0 w-max z-10" @fadeInOut *ngIf="isMoreOptionsVisible">
+                    <div class="flex flex-col rounded-lg gap-2 bg-primary-content p-2 relative">
                         <div *ngFor="let option of moreChatOptionsItems">
-                            <div class="flex align-items-center gap-2 hover:bg-white-alpha-10 p-2 border-round-md cursor-pointer"
+                            <div class="flex items-center gap-2 hover:text-primary p-2 rounded-lg cursor-pointer"
                                 (click)="option?.command()">
                                 <div class="dropdown-menu-icon"><i [ngClass]="option.icon"></i></div>
                                 <div class="dropdown-menu-title">{{option.title}}</div>
@@ -26,26 +25,26 @@
                 </div>
             </div>
         </div>
-        <div class="chats flex flex-column gap-2" *ngIf="globalService.selectedMenuItem?.label === 'Chats'">
+        <div class="flex flex-col gap-2" *ngIf="globalService.selectedMenuItem?.label === 'Chats'">
             <div *ngFor="let peopleAndMessage of chatList" (click)="handelUserSelect(peopleAndMessage)">
-                <div pRipple
-                    [ngClass]="selectedPeople.user_id === peopleAndMessage.connected_user_id ? 'flex align-items-center bg-white-alpha-30 shadow-5 p-2 cursor-pointer border-round-md hover:bg-white-alpha-20' : 'flex align-items-center bg-white-alpha-10 shadow-5 p-2 cursor-pointer border-round-md hover:bg-white-alpha-20'">
-                    <div class="flex justify-content-between w-full">
-                        <div class="flex align-items-center gap-2">
-                            <div class="profile-image flex align-items-center justify-content-center">
-                                <i class="bi bi-person-circle text-3xl"></i>
+                <div
+                    [ngClass]="(selectedPeople.user_id === peopleAndMessage.connected_user_id ? 'bg-slate-900 shadow-lg' : 'bg-inherit hover:bg-slate-900 ') + ' ' + 'flex items-center cursor-pointer p-2 w-full rounded-lg hover:drop-shadow-[1px_1px_2px_#fff]'">
+                    <div class="flex justify-between w-full">
+                        <div class="flex items-center gap-2">
+                            <div class="flex items-center justify-center">
+                                <i class="bi bi-person-circle text-4xl"></i>
                             </div>
-                            <div class="content">
-                                <div class="profile-name text-lg">{{peopleAndMessage.username}}</div>
-                                <div class="last-chat-content text-sm text-gray-400">{{peopleAndMessage.last_message}}
+                            <div class="flex flex-col">
+                                <div class="text-lg">{{peopleAndMessage.username}}</div>
+                                <div class="text-sm text-gray-400">{{peopleAndMessage.last_message}}
                                 </div>
                             </div>
                         </div>
                         <div>
-                            <div class="flex flex-column">
+                            <div class="flex flex-col">
                                 <div class="text-gray-400 text-sm">{{peopleAndMessage.last_message_time | date:'HH:mm'}}
                                 </div>
-                                <div class="flex align-items-center justify-content-center text-white text-sm bg-bluegray-400 border-circle"
+                                <div class="flex items-center justify-center text-white text-sm bg-primary rounded-full"
                                     *ngIf="globalService.selectedUser?.user_id !== peopleAndMessage.connected_user_id && peopleAndMessage.total_unread_chats !== '0'">
                                     <div class="">
                                         {{peopleAndMessage.total_unread_chats}}

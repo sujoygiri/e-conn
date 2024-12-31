@@ -23,11 +23,12 @@
                             </label>
                             <div class="email-error mt-2"
                                 *ngIf="signinForm.controls['email'].invalid && signinForm.controls['email'].dirty">
-                                <div role="alert" class="alert alert-error">
-                                    <i class="bi bi-x-circle-fill"></i>
-                                    <span *ngIf="signinForm.controls['email']?.errors?.['required']">Email is
+                                <div role="alert">
+                                    <span class="text-error"
+                                        *ngIf="signinForm.controls['email']?.errors?.['required']">Email is
                                         required</span>
-                                    <span *ngIf="signinForm.controls['email']?.errors?.['email']">Not a valid email
+                                    <span class="text-error" *ngIf="signinForm.controls['email']?.errors?.['email']">Not
+                                        a valid email
                                         id</span>
                                 </div>
                             </div>
@@ -45,10 +46,8 @@
                             </label>
                             <div class="password-error mt-2"
                                 *ngIf="signinForm.controls['password'].invalid && signinForm.controls['password'].dirty">
-                                <div role="alert" class="alert alert-error"
-                                    *ngIf="signinForm.controls['password']?.errors?.['required']">
-                                    <i class="bi bi-x-circle-fill"></i>
-                                    <span>Password is required</span>
+                                <div role="alert" *ngIf="signinForm.controls['password']?.errors?.['required']">
+                                    <span class="text-error">Password is required</span>
                                 </div>
                             </div>
                         </div>
