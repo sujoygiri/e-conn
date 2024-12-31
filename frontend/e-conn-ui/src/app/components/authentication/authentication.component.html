@@ -1,4 +1,4 @@
-<div class="fixed top-0 left-0 h-screen w-screen flex justify-center items-center">
+<div class="flex justify-center items-center mb-6">
     <div class="flex flex-col">
         <div class="flex justify-center">
             <img class="p-2" ngSrc="assets/images/loading-screen-logo.png" width="100" height="100" [priority]="true"
@@ -12,15 +12,14 @@
                         <div class="text-xl">Sign in</div>
                     </div>
                     <!--Need to create alert-->
-                    <!-- <p-messages showTransitionOptions="500ms" /> -->
                     <form method="post" [formGroup]="signinForm" (ngSubmit)="handelSignin()">
                         <div class="flex flex-col mt-3">
                             <div class="label">
                                 <span class="label-text">Email</span>
                             </div>
-                            <label class="input input-bordered flex items-center gap-2" for="email">
-                                <i class="bi bi-at"></i>
-                                <input type="email" id="email" formControlName="email">
+                            <label class="input input-bordered flex items-center gap-1 px-2 h-10" for="email">
+                                <i class="bi bi-at text-2xl"></i>
+                                <input class="grow" type="email" id="email" formControlName="email">
                             </label>
                             <div class="email-error mt-2"
                                 *ngIf="signinForm.controls['email'].invalid && signinForm.controls['email'].dirty">
@@ -37,10 +36,12 @@
                             <div class="label">
                                 <span class="label-text">Password</span>
                             </div>
-                            <label class="input input-bordered flex items-center gap-2">
-                                <i class="bi bi-key-fill"></i>
-                                <input type="password" class="grow" value="password" formControlName="password" />
-                                <i class="bi bi-eye-fill"></i>
+                            <label class="input input-bordered flex items-center gap-1 px-2 h-10">
+                                <i class="bi bi-key-fill text-2xl"></i>
+                                <input #loginPassword type="password" class="grow" value="password"
+                                    formControlName="password" />
+                                <i [ngClass]="{'cursor-pointer bi':true, 'bi-eye-fill':loginPassword.type === 'password', 'bi-eye-slash-fill':loginPassword.type === 'text'}"
+                                    (click)="togglePasswordState(loginPassword)"></i>
                             </label>
                             <div class="password-error mt-2"
                                 *ngIf="signinForm.controls['password'].invalid && signinForm.controls['password'].dirty">
@@ -52,8 +53,11 @@
                             </div>
                         </div>
                         <div class="flex justify-center items-center w-full mt-4">
-                            <button class="btn btn-primary cursor-pointer w-full" [disabled]="signinForm.invalid"
-                                type="submit">Signin</button>
+                            <button class="btn btn-sm btn-primary text-white w-full cursor-pointer"
+                                [disabled]="signinForm.invalid" type="submit">
+                                <span class="loading loading-spinner" *ngIf="loadingStatus"></span>
+                                Signin
+                            </button>
                         </div>
                     </form>
                     <div class="mt-4 flex justify-center items-center">
@@ -74,10 +78,10 @@
                                 <div class="label">
                                     <span class="label-text">Name</span>
                                 </div>
-                                <div class="input input-bordered flex items-center gap-2">
-                                    <i class="bi bi-person-fill"></i>
+                                <label class="input input-bordered flex items-center gap-1 px-2 h-10">
+                                    <i class="bi bi-person-fill text-2xl"></i>
                                     <input class="w-full" type="text" id="username" formControlName="username">
-                                </div>
+                                </label>
                                 <div class="username-error mt-2"
                                     *ngIf="signupForm.controls['username'].invalid && signupForm.controls['username'].dirty">
                                     <div role="alert" class="alert alert-error">
@@ -95,10 +99,10 @@
                                 <div class="label">
                                     <span class="label-text">Email</span>
                                 </div>
-                                <div class="input input-bordered flex items-center gap-2">
-                                    <i class="icon-position bi bi-at"></i>
+                                <label class="input input-bordered flex items-center gap-1 px-2 h-10">
+                                    <i class="bi bi-at text-2xl"></i>
                                     <input class="w-full" type="email" id="email" formControlName="email">
-                                </div>
+                                </label>
                                 <div class="email-error mt-2"
                                     *ngIf="signupForm.controls['email'].invalid && signupForm.controls['email'].dirty">
                                     <div role="alert" class="alert alert-error">
@@ -114,10 +118,12 @@
                                 <div class="label">
                                     <span class="label-text">Password</span>
                                 </div>
-                                <label class="input input-bordered flex items-center gap-2">
-                                    <i class="bi bi-key-fill"></i>
-                                    <input type="password" class="grow" value="password" formControlName="password" />
-                                    <i class="bi bi-eye-fill"></i>
+                                <label class="input input-bordered flex items-center gap-1 px-2 h-10">
+                                    <i class="bi bi-key-fill text-2xl"></i>
+                                    <input #signupPassword type="password" class="grow" value="password"
+                                        formControlName="password" />
+                                    <i [ngClass]="{'cursor-pointer bi':true, 'bi-eye-fill':signupPassword.type === 'password', 'bi-eye-slash-fill':signupPassword.type === 'text'}"
+                                        (click)="togglePasswordState(signupPassword)"></i>
                                 </label>
                                 <div class="password-error mt-2"
                                     *ngIf="signupForm.controls['password'].invalid && signupForm.controls['password'].dirty">
@@ -131,7 +137,7 @@
                                 </div>
                             </div>
                             <div class="w-full mt-3 flex items-center justify-center">
-                                <button class="btn btn-active btn-primary w-full" [disabled]="signupForm.invalid"
+                                <button class="btn btn-sm btn-primary w-full text-white" [disabled]="signupForm.invalid"
                                     type="submit">Create</button>
                             </div>
                         </form>

@@ -101,7 +101,7 @@ export class AuthenticationComponent implements OnInit {
         this.loadingStatus = false;
         let errorResponse: ErrorResponse = err.error;
         if (errorResponse.status === "error") {
-          
+
         }
       }
     });
@@ -135,5 +135,12 @@ export class AuthenticationComponent implements OnInit {
         }
       }
     });
+  }
+  togglePasswordState(inputElement: HTMLInputElement) {
+    if (inputElement.type === "password") {
+      inputElement.type = "text";
+    } else {
+      inputElement.type = "password";
+    }
   }
 }
