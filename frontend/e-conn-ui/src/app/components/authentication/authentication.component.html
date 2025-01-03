@@ -83,8 +83,7 @@
                                 </label>
                                 <div class="username-error mt-2"
                                     *ngIf="signupForm.controls['username'].invalid && signupForm.controls['username'].dirty">
-                                    <div role="alert" class="alert alert-error">
-                                        <i class="bi bi-x-circle-fill"></i>
+                                    <div role="alert" class="text-error">
                                         <span *ngIf="signupForm.controls['username']?.errors?.['required']">Name is
                                             required</span>
                                         <span *ngIf="signupForm.controls['username']?.errors?.['minlength']">Name must
@@ -104,8 +103,7 @@
                                 </label>
                                 <div class="email-error mt-2"
                                     *ngIf="signupForm.controls['email'].invalid && signupForm.controls['email'].dirty">
-                                    <div role="alert" class="alert alert-error">
-                                        <i class="bi bi-x-circle-fill"></i>
+                                    <div role="alert" class="text-error">
                                         <span *ngIf="signupForm.controls['email']?.errors?.['required']">Email is
                                             required</span>
                                         <span *ngIf="signupForm.controls['email']?.errors?.['email']">Not a valid email
@@ -126,8 +124,7 @@
                                 </label>
                                 <div class="password-error mt-2"
                                     *ngIf="signupForm.controls['password'].invalid && signupForm.controls['password'].dirty">
-                                    <div role="alert" class="alert alert-error">
-                                        <i class="bi bi-x-circle-fill"></i>
+                                    <div role="alert" class="text-error">
                                         <span *ngIf="signupForm.controls['password']?.errors?.['required']">Password is
                                             required</span>
                                         <span *ngIf="signupForm.controls['password']?.errors?.['pattern']">Not a strong

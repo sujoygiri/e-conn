@@ -31,13 +31,13 @@ export class MenuPanelComponent implements OnInit {
         label: 'Activity',
         icon: 'bi bi-bell',
         filledIcon: 'bi bi-bell-fill',
-        iconClass: 'text-xl',
+        iconClass: 'text-xl h-6 w-6 inline-flex items-center justify-center',
       },
       {
         label: 'Chats',
-        icon: 'bi bi-chat-dots',
-        filledIcon: 'bi bi-chat-dots-fill',
-        iconClass: 'text-xl',
+        icon: 'bi bi-chat-left-text',
+        filledIcon: 'bi bi-chat-left-text-fill',
+        iconClass: 'text-xl h-6 w-6 inline-flex items-center justify-center',
       },
       // {
       //   
@@ -46,8 +46,7 @@ export class MenuPanelComponent implements OnInit {
     this.profileMenuItem = {
       label: 'Profile',
       icon: 'bi bi-person-circle',
-      iconClass: 'text-xl',
-      styleClass: 'flex'
+      iconClass: 'text-xl h-6 w-6 inline-flex items-center justify-center'
     };
     this.selectedMenuItem = this.sideNavigationPanelItems[1];
     this.globalService.selectedMenuItem = this.sideNavigationPanelItems[1];

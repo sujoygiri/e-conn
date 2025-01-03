@@ -5,12 +5,12 @@
             <div class="flex items-center gap-1 relative"> <!-- new private chat -->
                 <div class="cursor-pointer hover:bg-gray-700 p-2 rounded-lg hover:text-primary"
                     (click)="openOrCloseOverlayPanel('new-private-chat')">
-                    <i class="bi bi-person-plus-fill text-xl"></i>
+                    <i class="bi bi-person-plus-fill text-xl h-6 w-6 inline-flex items-center justify-center"></i>
                 </div>
                 <div class="cursor-pointer hover:bg-gray-700 hover:text-primary p-2 rounded-lg" hideOnClickOutside
                     (clickOutside)="isMoreOptionsVisible = false" (click)="toggleMoreOptionsDropdown()">
                     <!-- more options -->
-                    <i class="bi bi-three-dots-vertical text-xl"></i>
+                    <i class="bi bi-three-dots-vertical text-xl h-6 w-6 inline-flex items-center justify-center"></i>
                 </div>
                 <div class="absolute top-full right-0 w-max z-10" @fadeInOut *ngIf="isMoreOptionsVisible">
                     <div class="flex flex-col rounded-lg gap-2 bg-primary-content p-2 relative">
@@ -28,7 +28,7 @@
         <div class="flex flex-col gap-2" *ngIf="globalService.selectedMenuItem?.label === 'Chats'">
             <div *ngFor="let peopleAndMessage of chatList" (click)="handelUserSelect(peopleAndMessage)">
                 <div
-                    [ngClass]="(selectedPeople.user_id === peopleAndMessage.connected_user_id ? 'bg-slate-900 shadow-lg' : 'bg-inherit hover:bg-slate-900 ') + ' ' + 'flex items-center cursor-pointer p-2 w-full rounded-lg hover:drop-shadow-[1px_1px_2px_#fff]'">
+                    [ngClass]="(selectedPeople.user_id === peopleAndMessage.connected_user_id ? 'bg-slate-900 shadow-lg' : 'bg-inherit hover:bg-slate-900 ') + ' ' + 'flex items-center cursor-pointer p-2 w-full rounded-lg hover:drop-shadow-[0.5mm_0.5mm_0.5mm_#fff]'">
                     <div class="flex justify-between w-full">
                         <div class="flex items-center gap-2">
                             <div class="flex items-center justify-center">
@@ -64,25 +64,25 @@
         </div>
     </div>
     <!-- new private connection panel -->
-    <div class="card-body absolute top-0 left-0 w-full h-full surface-ground z-2" *ngIf="isNewPrivateChatPanelVisible"
+    <div class="absolute top-0 left-0 w-full h-full bg-primary-content z-20" *ngIf="isNewPrivateChatPanelVisible"
         @slideInOut>
-        <div class="flex flex-column justify-content-center">
-            <div class="flex align-items-center p-2">
-                <div class="flex align-items-center justify-content-center cursor-pointer mr-4 p-2 border-round-lg hover:bg-white-alpha-10 hover:text-primary transition-all transition-duration-200 transition-ease-in"
+        <div class="flex flex-col justify-center">
+            <div class="flex items-center p-2">
+                <div class="flex items-center justify-center rounded-lg cursor-pointer mr-4 p-1.5 hover:bg-gray-700 text-white hover:text-primary transition-all duration-200 ease-in"
                     (click)="openOrCloseOverlayPanel('new-private-chat')">
-                    <i class="bi bi-arrow-left text-xl text-white"></i>
+                    <i class="bi bi-arrow-left text-xl h-6 w-6 inline-flex items-center justify-center"></i>
                 </div>
                 <div class="text-xl text-white">Start New Conversation</div>
             </div>
             <div class="px-3"> <!-- panel content -->
-                <div class="flex flex-column">
+                <div class="flex flex-col">
                     <input
-                        class="border-none border-bottom-1 border-gray-400 focus:border-primary outline-none surface-ground shadow-none p-2 transition-all transition-duration-200 transition-ease-in"
+                        class="border-b-[1px] border-gray-400 focus:border-primary outline-none bg-primary-content shadow-none p-2 transition-all duration-200 ease-in"
                         type="text" placeholder="Search name or email" (input)="searchPeople($event,'private')">
                 </div>
-                <div class="flex flex-column mt-3 gap-2">
+                <div class="flex flex-col mt-3 gap-2">
                     <div *ngFor="let people of foundPeople"> <!-- found people -->
-                        <div class="flex align-items-center gap-2 p-1 border-round-lg bg-white-alpha-10 cursor-pointer hover:bg-white-alpha-30 hover:text-primary"
+                        <div class="flex items-center gap-2 p-2 rounded-lg bg-slate-900 cursor-pointer hover:drop-shadow-[0.5mm_0.5mm_0.5mm_#fff] hover:text-primary"
                             (click)="startPrivateChat(people)">
                             <div>
                                 <i class="bi bi-person-circle text-lg"></i>
@@ -95,39 +95,38 @@
         </div>
     </div>
     <!-- select group member panel -->
-    <div class="card-body absolute top-0 left-0 w-full h-full surface-ground z-2" *ngIf="isNewGroupPanelVisible"
-        @slideInOut>
-        <div class="flex flex-column justify-content-center">
-            <div class="flex align-items-center p-2">
-                <div class="flex align-items-center justify-content-center cursor-pointer mr-4 p-2 border-round-lg hover:bg-white-alpha-10 hover:text-primary transition-all transition-duration-200 transition-ease-in"
+    <div class="absolute top-0 left-0 w-full h-full bg-primary-content z-20" *ngIf="isNewGroupPanelVisible" @slideInOut>
+        <div class="flex flex-col justify-center">
+            <div class="flex items-center p-2">
+                <div class="flex items-center justify-center cursor-pointer mr-4 p-2 rounded-lg text-white hover:bg-gray-700 hover:text-primary transition-all duration-200 ease-in"
                     (click)="openOrCloseOverlayPanel('new-group')">
-                    <i class="bi bi-arrow-left text-xl text-white"></i>
+                    <i class="bi bi-arrow-left text-xl h-6 w-6 inline-flex items-center justify-center"></i>
                 </div>
                 <div class="text-xl text-white">Add Group Members</div>
             </div>
             <div class="px-3"> <!-- panel content -->
-                <div class="flex flex-column">
+                <div class="flex flex-col">
                     <div class="flex flex-wrap gap-2">
                         <div *ngFor="let member of groupMembers"
-                            class="flex align-items-center gap-2 p-1 border-round-lg bg-white-alpha-10">
+                            class="flex items-center gap-2 p-1 rounded-lg bg-gray-700">
                             <!-- member chips -->
                             <div>
                                 <i class="bi bi-person-circle text-lg"></i>
                             </div>
                             <div>{{member.username}}</div>
-                            <div class="flex align-items-center justify-content-center cursor-pointer p-1 border-round-lg hover:bg-white-alpha-30 hover:text-primary"
+                            <div class="flex items-center justify-center cursor-pointer p-1 rounded-lg hover:bg-gray-700 hover:text-primary"
                                 (click)="addOrRemoveGroupMember(member, false)">
                                 <i class="bi bi-x"></i>
                             </div>
                         </div>
                     </div>
                     <input
-                        class="border-none border-bottom-1 border-gray-400 focus:border-primary outline-none surface-ground shadow-none p-2 transition-all transition-duration-200 transition-ease-in"
+                        class="border-b-[1px] border-gray-400 focus:border-primary outline-none bg-primary-content shadow-none p-2 transition-all duration-200 ease-in"
                         type="text" placeholder="Search name or email" (input)="searchPeople($event,'group')">
                 </div>
-                <div class="flex flex-column mt-3 gap-2">
+                <div class="flex flex-col mt-3 gap-2">
                     <div *ngFor="let people of alreadyConnectedPeople"> <!-- already connected people -->
-                        <div class="flex align-items-center gap-2 p-1 border-round-lg bg-white-alpha-10 cursor-pointer hover:bg-white-alpha-30 hover:text-primary"
+                        <div class="flex items-center gap-2 p-1 rounded-lg bg-gray-700 cursor-pointer hover:bg-gray-500 hover:text-primary"
                             (click)="addOrRemoveGroupMember(people, true)">
                             <div>
                                 <i class="bi bi-person-circle text-lg"></i>
@@ -139,7 +138,7 @@
             </div>
             <div class="absolute bottom-0 left-0 w-full" *ngIf="groupMembers.length > 0" @slideInOut>
                 <!-- button for group info -->
-                <div class="flex justify-content-center align-items-center py-3 px-2 bg-gray-900">
+                <div class="flex justify-center items-center py-3 px-2 bg-gray-900">
                     <button class="btn btn-circle btn-outline" (onClick)="openOrCloseOverlayPanel('new-group-info')">
                         <i class="bi bi-arrow-right text-2xl text-white h-100 w-100"></i>
                     </button>
@@ -148,41 +147,40 @@
         </div>
     </div>
     <!-- group info panel -->
-    <div class="card-body absolute top-0 left-0 w-full h-full surface-ground z-3" *ngIf="isNewGroupInfoPanelVisible"
+    <div class="absolute top-0 left-0 w-full h-full bg-primary-content z-30" *ngIf="isNewGroupInfoPanelVisible"
         @slideInOut>
-        <div class="flex flex-column justify-content-center">
-            <div class="flex align-items-center p-2">
-                <div class="flex align-items-center justify-content-center cursor-pointer mr-4 p-2 border-round-lg hover:bg-white-alpha-10 hover:text-primary transition-all transition-duration-200 transition-ease-in"
+        <div class="flex flex-col justify-center">
+            <div class="flex items-center p-2">
+                <div class="flex items-center justify-center cursor-pointer mr-4 p-2 rounded-lg text-white hover:bg-gray-700 hover:text-primary transition-all duration-200 ease-in"
                     (click)="openOrCloseOverlayPanel('new-group-info')">
-                    <i class="bi bi-arrow-left text-xl text-white"></i>
+                    <i class="bi bi-arrow-left text-xl h-6 w-6 inline-flex items-center justify-center"></i>
                 </div>
                 <div class="text-xl text-white">Enter Group Info</div>
             </div>
             <div class="px-3"> <!-- group info panel content -->
-                <div class="flex flex-column align-items-center justify-content-center">
+                <div class="flex flex-col items-center justify-center">
                     <!-- group image -->
                     <div
-                        class="cursor-pointer flex relative h-12rem w-12rem align-items-center justify-content-center bg-gray-900 border-circle">
+                        class="cursor-pointer flex relative h-48 w-48 items-center justify-center bg-gray-900 rounded-full">
                         <i class="bi bi-people-fill text-8xl text-gray-700"></i>
-                        <div
-                            class="absolute w-full h-full flex flex-column gap-2 align-items-center justify-content-center">
+                        <div class="absolute w-full h-full flex flex-col gap-2 items-center justify-center">
                             <i class="bi bi-camera-fill text-3xl text-white"></i>
                             <div class="text-sm text-white uppercase">Add Group Image</div>
                         </div>
                     </div>
                 </div>
-                <div class="flex flex-column mt-3 gap-2">
-                    <div class="flex flex-column"> <!-- group name -->
+                <div class="flex flex-col mt-3 gap-2">
+                    <div class="flex flex-col"> <!-- group name -->
                         <input type="text" name="group-name" id="group-name" placeholder="Group Name"
-                            class="border-none outline-none border-bottom-1 border-gray-400 focus:border-primary surface-ground p-2">
+                            class="outline-none border-b-[1px] border-gray-400 focus:border-primary bg-primary-content p-2">
                     </div>
-                    <div class="flex flex-column"> <!-- group description -->
-                        <div [contentEditable]="true"
+                    <div class="flex flex-col"> <!-- group description -->
+                        <!-- <div [contentEditable]="true"
                             class="border-none outline-none border-bottom-1 border-gray-400 focus:border-primary surface-ground p-2 mt-2 select-text cursor-text h-auto"
-                            #groupDescription title="Group Description (optional)" role="textbox"></div>
+                            #groupDescription title="Group Description (optional)" role="textbox"></div> -->
                         <textarea rows="1" name="" id="" (input)="handelGroupDescriptionFieldStyle($event)"
                             (blur)="demo($event)"
-                            class="group-description w-full border-none outline-none border-bottom-1 border-gray-400 focus:border-primary surface-ground p-2"
+                            class="w-full outline-none border-b-[1px] border-gray-400 focus:border-primary bg-primary-content p-2 resize-none"
                             placeholder="Group Description (optional)"></textarea>
                     </div>
                 </div>

@@ -1,21 +1,21 @@
-<div class="w-full h-full flex flex-column">
-    <div class="h-4rem">
-        <div class="flex align-items-center" *ngIf="globalService.selectedUser !== undefined">
-            <div class="profile-image flex align-items-center justify-content-center">
+<div class="w-full h-full flex flex-col">
+    <div class="h-16 flex items-start bg-gray-700 order-1">
+        <div class="flex items-center justify-center gap-2" *ngIf="globalService.selectedUser !== undefined">
+            <div class="flex items-center justify-center h-auto w-auto">
                 <i class="bi bi-person-circle text-3xl"></i>
             </div>
             <div class="profile-name">{{globalService.selectedUser.username}}</div>
         </div>
     </div>
-    <div class="main relative bg-gray-900 flex-1 flex-order-2">
-        <div class="chat-container absolute top-0 left-0 flex flex-column overflow-y-auto overflow-x-hidden h-full w-full m-0 p-0"
+    <div class="relative bg-gray-900 flex-1 order-2">
+        <div class="absolute top-0 left-0 flex flex-col overflow-y-auto overflow-x-hidden h-full w-full m-0 p-0"
             #messages (scroll)="onScroll($event)">
-            <div class="py-2 pl-0 messages">
+            <div class="py-2 pl-0">
                 <div *ngFor="let chat of chatList">
                     @if (chat.sender_id === globalService.authUser?.user_id) {
                     <div class="my-1">
-                        <div class="flex align-items-center justify-content-end px-7">
-                            <div class="content flex bg-primary-900 py-1 px-2 border-round-md">
+                        <div class="flex items-center justify-end px-7">
+                            <div class="flex bg-primary py-1 px-2 rounded-md">
                                 <div>
                                     <span>{{chat.content}}</span>
                                 </div>
@@ -27,8 +27,8 @@
                     </div>
                     }@else {
                     <div class="my-1">
-                        <div class="flex align-items-center justify-content-start px-7">
-                            <div class="content bg-white-alpha-10 py-1 px-2 border-round-md">{{chat.content}}</div>
+                        <div class="flex items-center justify-start px-7">
+                            <div class="content bg-gray-600 py-1 px-2 rounded-md">{{chat.content}}</div>
                         </div>
                     </div>
                     }
@@ -36,11 +36,30 @@
             </div>
         </div>
     </div>
-    <div class="h-5rem flex-order-3">
-        <div class="flex align-items-center justify-content-center py-3">
-            <textarea class="w-9 p-3 text-lg line-height-1" pInputTextarea [cols]="80" rows="1" id="message"
-                placeholder="Type a message" [(ngModel)]="typedMessage"
-                (keydown)="sendMessage($event)"></textarea>
+    <div class="order-3">
+        <!-- <div class="flex align-items-center justify-content-center py-3">
+            <textarea class="w-9 p-3 text-lg line-height-1" [cols]="80" rows="1" id="message"
+                placeholder="Type a message"></textarea>
+        </div> -->
+        <div class="flex items-center px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700">
+            <button type="button"
+                class="inline-flex justify-center p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
+                <span class="bi bi-card-image text-xl h-6 w-6 inline-flex items-center justify-center"></span>
+                <span class="sr-only">Upload image</span>
+            </button>
+            <button type="button"
+                class="p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
+                <span class="bi bi-emoji-laughing text-xl h-6 w-6 inline-flex items-center justify-center"></span>
+                <span class="sr-only">Add emoji</span>
+            </button>
+            <textarea id="chat" rows="1"
+                class="block resize-none mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="Your message..." [(ngModel)]="typedMessage" (keydown)="sendMessage($event)"></textarea>
+            <button type="submit"
+                class="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600">
+                <span class="bi bi-send text-xl h-6 w-6 inline-flex items-center justify-center rotate-45"></span>
+                <span class="sr-only">Send message</span>
+            </button>
         </div>
     </div>
 </div>
