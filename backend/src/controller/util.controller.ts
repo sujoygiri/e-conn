@@ -12,7 +12,9 @@ const searchUser = async (email: string) => {
             status: "success",
             statusCode: 200,
             message: "User found",
-            userData: queryResult.rows
+            data: {
+                user: queryResult.rows
+            }
         };
         return response;
     } else {

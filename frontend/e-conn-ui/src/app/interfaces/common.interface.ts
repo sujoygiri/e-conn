@@ -14,7 +14,9 @@ export interface SuccessResponse {
     status: "success" | "fail";
     statusCode: number;
     message: string;
-    userData?: People | People[];
+    data?: {
+        [key: string]: any;
+    };
 }
 
 export interface ErrorResponse {
@@ -48,16 +50,21 @@ export interface ChatDetail {
     // updated_at: string;
 }
 
-export interface PeopleAndMessage {
-    connected_user_id: string;
-    email: string;
-    last_message: string;
-    last_message_time: string;
-    total_unread_chats: string;
-    username: string;
+export interface Message {
+    chat_id?: string;
+    content?: string;
+    new_messages_count?: number;
+    sender_id?: string;
+    receiver_id?: string;
+    group_id?: string;
+    is_deleted?: boolean;
+    message_type: string;
+    attachment_url?: string;
+    is_read?: boolean;
+    created_at?: string;
 }
 
 export interface CustomError extends Error {
     statusCode?: number;
-    // errorMessage?:string;
+    errorMessage?: string;
 }

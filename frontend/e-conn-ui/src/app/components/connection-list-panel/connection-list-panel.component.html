@@ -26,28 +26,28 @@
             </div>
         </div>
         <div class="flex flex-col gap-2" *ngIf="globalService.selectedMenuItem?.label === 'Chats'">
-            <div *ngFor="let peopleAndMessage of chatList" (click)="handelUserSelect(peopleAndMessage)">
+            <div *ngFor="let chat of chatsList" (click)="handelUserSelect(chat)">
                 <div
-                    [ngClass]="(selectedPeople.user_id === peopleAndMessage.connected_user_id ? 'bg-slate-900 shadow-lg' : 'bg-inherit hover:bg-slate-900 ') + ' ' + 'flex items-center cursor-pointer p-2 w-full rounded-lg hover:drop-shadow-[0.5mm_0.5mm_0.5mm_#fff]'">
+                    [ngClass]="(selectedPeople.user_id === chat.connected_user_id ? 'bg-slate-900 shadow-lg' : 'bg-inherit hover:bg-slate-900 ') + ' ' + 'flex items-center cursor-pointer p-2 w-full rounded-lg hover:drop-shadow-[0.5mm_0.5mm_0.5mm_#fff]'">
                     <div class="flex justify-between w-full">
                         <div class="flex items-center gap-2">
                             <div class="flex items-center justify-center">
                                 <i class="bi bi-person-circle text-4xl"></i>
                             </div>
                             <div class="flex flex-col">
-                                <div class="text-lg">{{peopleAndMessage.username}}</div>
-                                <div class="text-sm text-gray-400">{{peopleAndMessage.last_message}}
+                                <div class="text-lg">{{chat.username}}</div>
+                                <div class="text-sm text-gray-400">{{chat.content}}
                                 </div>
                             </div>
                         </div>
                         <div>
                             <div class="flex flex-col">
-                                <div class="text-gray-400 text-sm">{{peopleAndMessage.last_message_time | date:'HH:mm'}}
+                                <div class="text-gray-400 text-sm">{{chat.last_chat_time | date:'HH:mm'}}
                                 </div>
                                 <div class="flex items-center justify-center text-white text-sm bg-primary rounded-full"
-                                    *ngIf="globalService.selectedUser?.user_id !== peopleAndMessage.connected_user_id && peopleAndMessage.total_unread_chats !== '0'">
+                                    *ngIf="globalService.selectedUser?.user_id !== chat.connected_user_id && chat.new_chats_count !== 0">
                                     <div class="">
-                                        {{peopleAndMessage.total_unread_chats}}
+                                        {{chat.new_chats_count}}
                                     </div>
                                 </div>
                             </div>

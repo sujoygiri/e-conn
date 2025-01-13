@@ -21,5 +21,7 @@ export interface SuccessResponse {
     status: "success" | "fail";
     statusCode: number;
     message: string;
-    userData?: People | People[];
+    data?: {
+        [key: string]: any;
+    };
 }

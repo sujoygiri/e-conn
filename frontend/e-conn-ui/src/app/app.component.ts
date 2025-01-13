@@ -36,18 +36,18 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.authService.verifyUser().subscribe({
       next: (response) => {
-        if (response.status === "success" && response.statusCode === 200 && !Array.isArray(response.userData)) {
+        if (response.status === "success" && response.data && !Array.isArray(response.data)) {
           let userDetails: People = {
-            username: response.userData?.username ?? '',
-            email: response.userData?.email ?? '',
-            user_id: response.userData?.user_id ?? '',
+            username: response.data['username'] ?? '',
+            email: response.data['email'] ?? '',
+            user_id: response.data['user_id'] ?? '',
           };
           this.globalService.authUser = userDetails;
           window.localStorage.setItem("userData", JSON.stringify(userDetails));
           this.loading = false;
           this.globalService.isAuthenticated = true;
           socket.auth = {
-            user_id: response.userData?.user_id,
+            user_id: response.data['user_id'],
           };
           socket.connect();
         }

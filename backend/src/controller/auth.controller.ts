@@ -23,7 +23,7 @@ export const signupHandler = async (req: Request, res: Response, next: NextFunct
                     status: "success",
                     statusCode: 201,
                     message: "Account created successfully",
-                    userData: {
+                    data: {
                         username,
                         email,
                         user_id,
@@ -60,10 +60,10 @@ export const signinHandler = async (req: Request, res: Response, next: NextFunct
                         status: "success",
                         statusCode: 200,
                         message: "Signin successful",
-                        userData: {
+                        data: {
                             username,
                             email,
-                            user_id: user_id
+                            user_id
                         }
                     };
                     res.status(responseObj.statusCode).json(responseObj);
@@ -103,7 +103,7 @@ export const authenticationHandler = async (req: Request, res: Response, next: N
                     status: "success",
                     statusCode: 200,
                     message: "Authentication successful",
-                    userData: {
+                    data: {
                         username,
                         email,
                         user_id: userData.user_id

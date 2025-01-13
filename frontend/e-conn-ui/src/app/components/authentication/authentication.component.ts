@@ -82,16 +82,16 @@ export class AuthenticationComponent implements OnInit {
     this.authService.signin(userData).subscribe({
       next: (response) => {
         this.loadingStatus = false;
-        if (response.status === "success" && response.statusCode === 200 && !Array.isArray(response.userData)) {
+        if (response.status === "success" && response.data && !Array.isArray(response.data)) {
           let userDetails: People = {
-            username: response.userData?.username ?? '',
-            email: response.userData?.email ?? '',
-            user_id: response.userData?.user_id ?? '',
+            username: response.data['username'] ?? '',
+            email: response.data['email'] ?? '',
+            user_id: response.data['user_id'] ?? '',
           };
           this.globalService.authUser = userDetails;
           window.localStorage.setItem("user", JSON.stringify(userDetails));
           socket.auth = {
-            user_id: response.userData?.user_id ?? '',
+            user_id: response.data['user_id'] ?? '',
           };
           socket.connect();
           this.globalService.isAuthenticated = true;
@@ -112,17 +112,17 @@ export class AuthenticationComponent implements OnInit {
     this.loadingStatus = true;
     this.authService.signup(userData).subscribe({
       next: (response) => {
-        if (response.status === "success" && response.statusCode === 201 && !Array.isArray(response.userData)) {
+        if (response.status === "success" && response.data && !Array.isArray(response.data)) {
           this.loadingStatus = false;
           let userDetails: People = {
-            username: response.userData?.username ?? '',
-            email: response.userData?.email ?? '',
-            user_id: response.userData?.user_id ?? '',
+            username: response.data['username'] ?? '',
+            email: response.data['email'] ?? '',
+            user_id: response.data['user_id'] ?? '',
           };
           this.globalService.authUser = userDetails;
           window.localStorage.setItem("authUser", JSON.stringify(userDetails));
           socket.auth = {
-            user_id: response.userData?.user_id ?? '',
+            user_id: response.data['user_id'] ?? '',
           };
           socket.connect();
           this.globalService.isAuthenticated = true;

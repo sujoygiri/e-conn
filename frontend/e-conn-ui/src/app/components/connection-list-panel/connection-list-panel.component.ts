@@ -4,13 +4,25 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { Subscription } from 'rxjs';
 
 import { UtilService } from '../../services/util.service';
-import { CustomError, DropDownItem, People, PeopleAndMessage, SideNavigationPanelItem, SuccessResponse } from '../../interfaces/common.interface';
+import { CustomError, DropDownItem, People, Message, SideNavigationPanelItem, SuccessResponse } from '../../interfaces/common.interface';
 import { CommonModule } from '@angular/common';
 import { GlobalService } from '../../services/global.service';
 import socket from '../../socket-client/socket';
 import { SharedService } from '../../services/shared.service';
 import { HideOnClickOutsideDirective } from '../../directives/hide-on-click-outside.directive';
 import { validateEmail } from '../../utils/inputValidation';
+
+export interface PrivateChat {
+  connected_user_id: string;
+  content: string | null;
+  email: string;
+  is_read: string | null;
+  last_chat_time: string | null;
+  message_type: string | null;
+  new_chats_count: number;
+  sender_id: string | null;
+  username: string;
+}
 
 @Component({
   selector: 'app-connection-list-panel',
@@ -47,8 +59,8 @@ import { validateEmail } from '../../utils/inputValidation';
 export class ConnectionListPanelComponent implements AfterViewInit, OnDestroy {
   searchForm!: FormGroup;
   moreChatOptionsItems: DropDownItem[] | undefined;
-  chatList: PeopleAndMessage[] = [];
-  foundPeople: Set<People> = new Set();
+  chatsList: PrivateChat[] = [];
+  foundPeople: People[] = [];
   loading: boolean = false;
   isPeopleFound: boolean = false;
   selectedPeople: People = {} as People;
@@ -84,47 +96,55 @@ export class ConnectionListPanelComponent implements AfterViewInit, OnDestroy {
     this.searchForm = this.formBuilder.group({
       search: ['', [Validators.required, Validators.email]]
     });
-    socket.on("search-connected-people", (data) => {
-      if (data.user_id === this.globalService.authUser?.user_id) {
-        if (data.users && data.users.length > 0) {
-          this.alreadyConnectedPeople = data.users;
-        }
-      }
-    });
+    // socket.on("search-connected-people", (data) => {
+    //   if (data.user_id === this.globalService.authUser?.user_id) {
+    //     if (data.users && data.users.length > 0) {
+    //       this.alreadyConnectedPeople = data.users;
+    //     }
+    //   }
+    // });
     socket.on("search-new-user", (response: SuccessResponse) => {
-      if (response.status === "success" && Array.isArray(response.userData)) {
+      if (response.status === "success" && response.data && Array.isArray(response.data['user'])) {
         console.log(response);
-        response.userData.forEach((people: People) => {
-          this.foundPeople.add(people);
+        response.data['user'].forEach((people: People) => {
+          this.foundPeople.push(people);
         });
       }
     });
-    socket.on("get-connected-people-messages", (data) => {
-      if (data.user_id === this.globalService.authUser?.user_id) {
-        if (data.users && data.users.length > 0) {
-          data.users.forEach((user: PeopleAndMessage) => {
-            let peopleAndMessage: PeopleAndMessage = {
-              connected_user_id: user.connected_user_id,
-              username: user.username,
-              email: user.email,
-              last_message: user.last_message,
-              total_unread_chats: user.total_unread_chats,
-              last_message_time: user.last_message_time,
-            };
-            this.chatList.push(peopleAndMessage);
-          });
-        }
+    socket.emit("get-connections", { user_id: this.globalService.authUser?.user_id });
+    socket.on("get-connections", (response: SuccessResponse) => {
+      if (response.status === "success" && response.data) {
+        this.chatsList = response.data['privateChatConnections'];
       }
     });
-    socket.on("add-connection", (data) => {
-      if (data.user_id === this.globalService.authUser?.user_id) {
-        console.log(data);
-      }
-    });
-    socket.on("sent-error", (error: CustomError) => {
-      console.log(error);
-    });
-    socket.emit("get-connected-people-messages", { user_id: this.globalService.authUser?.user_id });
+
+    // socket.on("get-connected-people-messages", (data) => {
+    //   if (data.user_id === this.globalService.authUser?.user_id) {
+    //     if (data.users && data.users.length > 0) {
+    //       data.users.forEach((user: (People & Message)) => {
+    //         let peopleAndMessage: (People & Message) = {
+    //           user_id: user.user_id,
+    //           username: user.username,
+    //           email: user.email,
+    //           content: user.content,
+    //           new_messages_count: user.new_messages_count,
+    //           created_at: user.created_at,
+    //           message_type: user.message_type
+    //         };
+    //         this.chatList.push(peopleAndMessage);
+    //       });
+    //     }
+    //   }
+    // });
+    // socket.on("add-connection", (data) => {
+    //   if (data.user_id === this.globalService.authUser?.user_id) {
+    //     console.log(data);
+    //   }
+    // });
+    // socket.on("sent-error", (error: CustomError) => {
+    //   console.log(error);
+    // });
+    // socket.emit("get-connected-people-messages", { user_id: this.globalService.authUser?.user_id });
     this.menuItemClickEventSubscription = this.sharedService.menuItemClickedEvent.subscribe({
       next: (menuItem: SideNavigationPanelItem) => {
         console.log(menuItem);
@@ -145,19 +165,46 @@ export class ConnectionListPanelComponent implements AfterViewInit, OnDestroy {
     // });
   }
 
+  searchPeople(event: Event, searchType: string) {
+    const targetInput = event.target as HTMLInputElement;
+    const targetInputValue = targetInput.value;
+    switch (searchType) {
+      case "private":
+        // this.loading = true;
+        const isValidEmail = validateEmail(targetInputValue);
+        if (isValidEmail) {
+          socket.emit("search-new-user", { email: targetInputValue });
+        }
+        break;
+      case "group":
+        this.isPeopleFound = false;
+        this.foundPeople = [];
+        break;
+      default:
+        break;
+    }
+  }
+
   startPrivateChat(people: People) {
     this.isNewPrivateChatPanelVisible = false;
-    let peopleAndMessage: PeopleAndMessage = {
+    let peopleAndMessage: PrivateChat = {
       connected_user_id: people.user_id,
       username: people.username,
       email: people.email,
-      last_message: "Draft",
-      total_unread_chats: "0",
-      last_message_time: "",
+      content: "Start a conversation...",
+      new_chats_count: 0,
+      last_chat_time: "",
+      message_type: "text",
+      is_read: null,
+      sender_id: null, // need to update this when sending message or receiving message
     };
-    let isAlreadyConnected = this.chatList.find((chat) => chat.connected_user_id === people.user_id);
+    let isAlreadyConnected = this.chatsList.find((chat) => chat.connected_user_id === people.user_id);
     if (!isAlreadyConnected) {
-      this.chatList.unshift(peopleAndMessage);
+      let created_at = new Date().toISOString();
+      socket.emit("new-connection", { user_id: this.globalService.authUser?.user_id, connected_user_id: people.user_id, created_at }, (response: SuccessResponse) => {
+        console.log(response);
+        this.chatsList.unshift(peopleAndMessage);
+      });
     }
     this.globalService.selectedUser = people;
     this.sharedService.triggerPeopleSelectEvent(people);
@@ -210,26 +257,6 @@ export class ConnectionListPanelComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  searchPeople(event: Event, searchType: string) {
-    const targetInput = event.target as HTMLInputElement;
-    const targetInputValue = targetInput.value;
-    switch (searchType) {
-      case "private":
-        // this.loading = true;
-        const isValidEmail = validateEmail(targetInputValue);
-        if (isValidEmail) {
-          socket.emit("search-new-user", { email: targetInputValue });
-        }
-        break;
-      case "group":
-        this.isPeopleFound = false;
-        this.foundPeople.clear();
-        break;
-      default:
-        break;
-    }
-  }
-
   addToChatList(people: People) {
     // this.chatList.push(peopleAndMessage);
     // let newChatDetails: { user_id: string | undefined, connected_user_id: string | undefined; } = {
@@ -242,11 +269,11 @@ export class ConnectionListPanelComponent implements AfterViewInit, OnDestroy {
     // this.foundPeople = [];
   }
 
-  handelUserSelect(peopleAndMessage: PeopleAndMessage) {
+  handelUserSelect(people: PrivateChat) {
     this.selectedPeople = {
-      username: peopleAndMessage.username,
-      email: peopleAndMessage.email,
-      user_id: peopleAndMessage.connected_user_id
+      username: people.username,
+      email: people.email,
+      user_id: people.connected_user_id
     };
     this.globalService.selectedUser = this.selectedPeople;
     this.sharedService.triggerPeopleSelectEvent(this.selectedPeople);
@@ -254,7 +281,7 @@ export class ConnectionListPanelComponent implements AfterViewInit, OnDestroy {
 
   resetState() {
     this.loading = false;
-    this.foundPeople.clear();
+    this.foundPeople = [];
     this.searchForm.reset();
     this.isPeopleFound = false;
   }
